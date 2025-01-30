@@ -123,6 +123,7 @@ dist
 
 # TernJS port file
 .tern-port
+yarn.lock
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
