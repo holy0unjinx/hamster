@@ -1,114 +1,123 @@
 import bcrypt from 'bcrypt';
-import { User, StudentProfile, TeacherProfile } from '../model/user.model';
 import { authUtils } from '@utils/auth.utils';
-import { RegistrationDto } from '@/shared/types/auth.dto';
+import {
+  StudentRegistrationDto,
+  TeacherRegistrationDto,
+} from '@/shared/types/auth.dto';
 import {
   AccountInactiveError,
   InvalidCredentialsError,
   InvalidTokenError,
   UserExistError,
+  UserNotFoundError,
 } from '@/shared/types/error.type';
 import jwt from 'jsonwebtoken';
-import sequelize from '@config/database';
-import { NextFunction, Request, Response } from 'express';
 import { JWT_CONFIG } from '@config/jwt.config';
+import prisma from '@config/database';
+import { Token } from '@type/jwt.type';
 import { TokenBlacklist } from '../model/tokenBlacklist.model';
 
 export class AuthService {
-  async registerUser(registrationData: RegistrationDto) {
-    const { identifier, password, role, name, ...profileData } =
-      registrationData;
+  async registerStudent(registrationData: StudentRegistrationDto) {
+    const { studentNumber, password, ...profileData } = registrationData;
 
-    const existingUser = await User.findOne({ where: { identifier } });
+    // 사용자가 존재하면 (학번으로 탐색) 오류류
+    const existingUser = await prisma.student.findUnique({
+      where: { studentNumber },
+    });
     if (existingUser) {
       throw new UserExistError();
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    return sequelize.transaction(async (t) => {
-      const user = await User.create(
-        {
-          identifier,
+    const splitNumber = [
+      Math.floor(studentNumber / 10000),
+      Math.floor((studentNumber % 10000) / 100),
+      studentNumber % 100,
+    ];
+
+    return prisma.$transaction(async (prisma: any) => {
+      const user = await prisma.student.create({
+        data: {
+          studentNumber,
           passwordHash,
-          role,
-          name,
+          ...profileData,
+          grade: splitNumber[0],
+          class: splitNumber[1],
+          number: splitNumber[2],
         },
-        { transaction: t },
-      );
-
-      if (role === 'student') {
-        await StudentProfile.create(
-          {
-            userId: user.userId,
-            ...profileData,
-          },
-          { transaction: t },
-        );
-      } else if (role === 'teacher') {
-        await TeacherProfile.create(
-          {
-            userId: user.userId,
-            ...profileData,
-          },
-          { transaction: t },
-        );
-      }
+      });
 
       return authUtils.generateTokens({
-        userId: user.userId,
-        role: user.role,
+        id: user.id,
+        role: 'student',
       });
     });
   }
 
-  async loginUser(identifier: string, password: string) {
-    const user = await User.findOne({ where: { identifier } });
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-      throw new InvalidCredentialsError();
+  async activateStudent(id: number) {
+    return prisma.$transaction(async (prisma: any) => {
+      await prisma.student.update({
+        where: { id },
+        data: { activated: true },
+      });
+    });
+  }
+
+  async registerTeacher(registrationData: TeacherRegistrationDto) {
+    const { email, password, ...profileData } = registrationData;
+
+    // 사용자가 존재하면 (이메일로 탐색) 오류류
+    const existingUser = await prisma.teacher.findUnique({
+      where: { email },
+    });
+    if (existingUser) {
+      throw new UserExistError();
     }
 
-    if (!user.isActive) {
-      throw new AccountInactiveError();
-    }
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    return prisma.$transaction(async (prisma: any) => {
+      const user = await prisma.teacher.create({
+        data: {
+          email,
+          passwordHash,
+          ...profileData,
+        },
+      });
+
+      return authUtils.generateTokens({
+        id: user.id,
+        role: 'teacher',
+      });
+    });
+  }
+
+  async loginStudent(studentNumber: number, password: string): Promise<Token> {
+    // 사용자가 존재하는 확인
+    const user = await prisma.student.findUnique({ where: { studentNumber } });
+    if (!user) throw new UserNotFoundError();
+    if (!(await bcrypt.compare(password, user.passwordHash)))
+      throw new InvalidCredentialsError();
+    if (!user.activated) throw new AccountInactiveError();
 
     return authUtils.generateTokens({
-      userId: user.userId,
-      role: user.role,
+      id: user.id,
+      role: 'student',
     });
   }
 
-  async refresh(req: Request, res: Response) {
-    const { refreshToken } = req.body;
+  async loginTeacher(email: string, password: string): Promise<Token> {
+    // 사용자가 존재하는 확인
+    const user = await prisma.teacher.findUnique({ where: { email } });
+    if (!user) throw new UserNotFoundError();
+    if (!(await bcrypt.compare(password, user.passwordHash)))
+      throw new InvalidCredentialsError();
 
-    try {
-      const newTokens = await authUtils.rotateRefreshToken(refreshToken);
-      res.json(newTokens);
-    } catch (error) {
-      throw new InvalidTokenError();
-    }
-  }
-
-  async logout(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    try {
-      if (!token) throw new InvalidTokenError();
-      const decoded = jwt.verify(
-        token,
-        JWT_CONFIG.ACCESS_SECRET,
-      ) as jwt.JwtPayload;
-
-      await TokenBlacklist.addToBlacklist(token);
-      res.setHeader('Clear-Site-Data', '"cookies", "storage"');
-      res.removeHeader('Authorization');
-
-      res.status(200).json({
-        success: true,
-        message: '로그아웃 성공',
-      });
-    } catch (error) {
-      next(new Error('로그아웃 처리 실패'));
-    }
+    return authUtils.generateTokens({
+      id: user.id,
+      role: 'teacher',
+    });
   }
 }

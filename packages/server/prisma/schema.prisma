@@ -15,8 +15,6 @@ model Student {
   lastLogin        DateTime?         @map("last_login")
   notifications    Notification[]
   pushSubscriptions PushSubscription[]
-  examScores       ExamScore[]
-  assessmentScores AssessmentScore[]
 
   @@index([grade, class], name: "idx_student_grade_class")
 }
@@ -27,12 +25,12 @@ model Teacher {
   passwordHash    String   @map("password_hash")
   name            String
   subject         String
-  teachersOffice  String?  @map("teachers_office")
-  homeroomClass   String?  @map("homeroom_class")
+  teachersOffice  Int?  @map("teachers_office")
+  homeroomClass   Int?  @map("homeroom_class")
   createdAt       DateTime @default(now()) @map("created_at")
 }
 
-model SchoolSchedule {
+model Schedule {
   id          Int       @id @default(autoincrement())
   title       String
   description String?
@@ -45,43 +43,16 @@ model Subject {
   id                    Int                     @id @default(autoincrement())
   subjectName          String                  @map("subject_name")
   grade                Int
-  examScores           ExamScore[]
-  performanceAssessments PerformanceAssessment[]
+  performanceAssessments Assessment[]
 }
 
-model PerformanceAssessment {
+model Assessment {
   id              Int               @id @default(autoincrement())
   subjectId       Int              @map("subject_id")
   title           String
   description     String?
   maxScore        Float            @map("max_score")
   subject         Subject          @relation(fields: [subjectId], references: [id])
-  assessmentScores AssessmentScore[]
-}
-
-model ExamScore {
-  id          Int      @id @default(autoincrement())
-  studentId   Int      @map("student_id")
-  subjectId   Int      @map("subject_id")
-  examType    String   @map("exam_type")
-  score       Float
-  createdAt   DateTime @default(now()) @map("created_at")
-  student     Student  @relation(fields: [studentId], references: [id])
-  subject     Subject  @relation(fields: [subjectId], references: [id])
-
-  @@index([studentId], name: "idx_exam_scores_student")
-}
-
-model AssessmentScore {
-  id                    Int                   @id @default(autoincrement())
-  studentId             Int                   @map("student_id")
-  assessmentId          Int                   @map("assessment_id")
-  score                 Float
-  createdAt            DateTime              @default(now()) @map("created_at")
-  student              Student               @relation(fields: [studentId], references: [id])
-  performanceAssessment PerformanceAssessment @relation(fields: [assessmentId], references: [id])
-
-  @@index([studentId], name: "idx_assessment_scores_student")
 }
 
 model Notification {
@@ -108,7 +79,13 @@ model PushSubscription {
   @@index([studentId], name: "idx_push_subscriptions_student")
 }
 
+model TokenBlacklist {
+  token           String    @unique
+  expires_at      DateTime
+  invalidated_at  DateTime  @default(now())
+}
+
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }

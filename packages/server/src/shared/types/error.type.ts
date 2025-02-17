@@ -1,16 +1,3 @@
-export class ServerError extends Error {
-  public statusCode: number;
-
-  constructor(
-    public code: 'ENVIRONMENT_NOT_DEFINE',
-    status: number,
-    message?: string,
-  ) {
-    super(message || code);
-    this.statusCode = status;
-  }
-}
-
 export class AuthError extends Error {
   public statusCode: number;
 
@@ -23,12 +10,26 @@ export class AuthError extends Error {
       | 'USER_EXIST'
       | 'INVALID_CREDENTIALS'
       | 'ACCOUNT_INACTIVE'
-      | 'AUTHENTICATION_ERROR',
+      | 'AUTHENTICATION_ERROR'
+      | 'WRONG_CODE'
+      | 'INVALID_INFORMATION',
     status: number,
     message?: string,
   ) {
     super(message || code);
     this.statusCode = status;
+  }
+}
+
+export class InvalidInformationError extends AuthError {
+  constructor() {
+    super('INVALID_INFORMATION', 400, '잘못된 정보가 제공되었습니다.');
+  }
+}
+
+export class WrongCodeError extends AuthError {
+  constructor() {
+    super('WRONG_CODE', 400, '잘못된 코드가 제공되었습니다.');
   }
 }
 
