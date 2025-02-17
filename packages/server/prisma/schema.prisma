@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Student {
+  id                Int                @id @default(autoincrement())
+  studentNumber     Int                @unique
+  passwordHash      String
+  grade            Int
+  class            Int
+  number           Int
+  name             String
+  activated        Boolean            @default(false)
+  createdAt        DateTime          @default(now()) @map("created_at")
+  lastLogin        DateTime?         @map("last_login")
+  notifications    Notification[]
+  pushSubscriptions PushSubscription[]
+  examScores       ExamScore[]
+  assessmentScores AssessmentScore[]
+
+  @@index([grade, class], name: "idx_student_grade_class")
+}
+
+model Teacher {
+  id              Int      @id @default(autoincrement())
+  email           String   @unique
+  passwordHash    String   @map("password_hash")
+  name            String
+  subject         String
+  teachersOffice  String?  @map("teachers_office")
+  homeroomClass   String?  @map("homeroom_class")
+  createdAt       DateTime @default(now()) @map("created_at")
+}
+
+model SchoolSchedule {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime  @map("end_date")
+  createdAt   DateTime  @default(now()) @map("created_at")
+}
+
+model Subject {
+  id                    Int                     @id @default(autoincrement())
+  subjectName          String                  @map("subject_name")
+  grade                Int
+  examScores           ExamScore[]
+  performanceAssessments PerformanceAssessment[]
+}
+
+model PerformanceAssessment {
+  id              Int               @id @default(autoincrement())
+  subjectId       Int              @map("subject_id")
+  title           String
+  description     String?
+  maxScore        Float            @map("max_score")
+  subject         Subject          @relation(fields: [subjectId], references: [id])
+  assessmentScores AssessmentScore[]
+}
+
+model ExamScore {
+  id          Int      @id @default(autoincrement())
+  studentId   Int      @map("student_id")
+  subjectId   Int      @map("subject_id")
+  examType    String   @map("exam_type")
+  score       Float
+  createdAt   DateTime @default(now()) @map("created_at")
+  student     Student  @relation(fields: [studentId], references: [id])
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+
+  @@index([studentId], name: "idx_exam_scores_student")
+}
+
+model AssessmentScore {
+  id                    Int                   @id @default(autoincrement())
+  studentId             Int                   @map("student_id")
+  assessmentId          Int                   @map("assessment_id")
+  score                 Float
+  createdAt            DateTime              @default(now()) @map("created_at")
+  student              Student               @relation(fields: [studentId], references: [id])
+  performanceAssessment PerformanceAssessment @relation(fields: [assessmentId], references: [id])
+
+  @@index([studentId], name: "idx_assessment_scores_student")
+}
+
+model Notification {
+  id           Int      @id @default(autoincrement())
+  studentId    Int      @map("student_id")
+  title        String
+  content      String
+  isRead       Boolean  @default(false) @map("is_read")
+  createdAt    DateTime @default(now()) @map("created_at")
+  student      Student  @relation(fields: [studentId], references: [id])
+
+  @@index([studentId, isRead], name: "idx_notifications_student_read")
+}
+
+model PushSubscription {
+  id          Int      @id @default(autoincrement())
+  studentId   Int      @map("student_id")
+  endpoint    String
+  p256dh      String
+  auth        String
+  createdAt   DateTime @default(now()) @map("created_at")
+  student     Student  @relation(fields: [studentId], references: [id])
+
+  @@index([studentId], name: "idx_push_subscriptions_student")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

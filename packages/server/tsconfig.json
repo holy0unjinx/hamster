@@ -20,14 +20,15 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
+      "@/*": ["src/*"],
       "@modules/*": ["src/modules/*"],
       "@api/*": ["src/api/*"],
       "@config/*": ["src/shared/config/*"],
       "@middleware/*": ["src/shared/middleware/*"],
-      "@types/*": ["src/shared/types/*"],
+      "@type/*": ["src/shared/types/*"],
       "@utils/*": ["src/shared/utils/*"]
     }
   },
-  "include": ["index.ts", "src/*"],
+  "include": ["index.ts", "src/**/*"],
   "exclude": ["node_modules"]
 }
