@@ -4,7 +4,10 @@ declare global {
   namespace Express {
     interface Request {
       logger: ReturnType<typeof createContextLogger>;
-      user?: string | JwtPayload;
+      user?: {
+        id?: string;
+        role?: 'student' | 'teacher' | 'john';
+      };
     }
   }
 }

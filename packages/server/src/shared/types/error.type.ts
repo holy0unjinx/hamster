@@ -11,6 +11,7 @@ export class AuthError extends Error {
       | 'INVALID_CREDENTIALS'
       | 'ACCOUNT_INACTIVE'
       | 'AUTHENTICATION_ERROR'
+      | 'INSUFFICIENT_AUTHORITY'
       | 'WRONG_CODE'
       | 'INVALID_INFORMATION',
     status: number,
@@ -18,6 +19,12 @@ export class AuthError extends Error {
   ) {
     super(message || code);
     this.statusCode = status;
+  }
+}
+
+export class InsufficientAuthorityError extends AuthError {
+  constructor() {
+    super('INSUFFICIENT_AUTHORITY', 401, '권한이 부족합니다');
   }
 }
 

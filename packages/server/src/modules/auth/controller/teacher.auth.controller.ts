@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { AuthService } from '../service/auth.service';
 import { InvalidInformationError } from '@type/error.type';
 import { TeacherRegistrationDto } from '@type/auth.dto';
-import { addToken, handleAuthError } from './auth.controller';
+import { addToken } from './auth.controller';
+import { handleAuthError } from '@/shared/utils/handle.utils';
 
 function isTeacherRegistrationDto(body: any): body is TeacherRegistrationDto {
   // 필수 필드 검증

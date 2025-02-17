@@ -8,14 +8,18 @@ import {
   AccountInactiveError,
   InvalidCredentialsError,
   InvalidTokenError,
+  TokenExpiredError,
   UserExistError,
   UserNotFoundError,
 } from '@/shared/types/error.type';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JWT_CONFIG } from '@config/jwt.config';
 import prisma from '@config/database';
 import { Token } from '@type/jwt.type';
 import { TokenBlacklist } from '../model/tokenBlacklist.model';
+import { Request, Response } from 'express';
+import { addToken } from '../controller/auth.controller';
+import { handleAuthError } from '@/shared/utils/handle.utils';
 
 export class AuthService {
   async registerStudent(registrationData: StudentRegistrationDto) {
@@ -46,6 +50,7 @@ export class AuthService {
           grade: splitNumber[0],
           class: splitNumber[1],
           number: splitNumber[2],
+          lastLogin: new Date(),
         },
       });
 
@@ -102,6 +107,11 @@ export class AuthService {
       throw new InvalidCredentialsError();
     if (!user.activated) throw new AccountInactiveError();
 
+    await prisma.student.update({
+      where: { studentNumber },
+      data: { lastLogin: new Date() },
+    });
+
     return authUtils.generateTokens({
       id: user.id,
       role: 'student',
@@ -119,5 +129,43 @@ export class AuthService {
       id: user.id,
       role: 'teacher',
     });
+  }
+}
+
+export async function refreshToken(req: Request, res: Response) {
+  try {
+    const refreshToken = req.cookies['refresh-token'];
+    // 뭐 각종 오류 처리
+    if (!refreshToken) throw new InvalidTokenError();
+    if (await TokenBlacklist.isTokenBlacklisted(refreshToken))
+      throw new TokenExpiredError();
+
+    // refresh token 시간 별로 없으면 refresh 토큰 같이 해줌
+    const refreshTokenDecode = jwt.decode(refreshToken) as JwtPayload;
+    if (!refreshTokenDecode || !refreshTokenDecode.exp)
+      throw new InvalidTokenError();
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const threeDaysInSeconds = 3 * 24 * 60 * 60; // 3일을 초 단위로 변환
+
+    if (refreshTokenDecode.exp - currentTimestamp <= threeDaysInSeconds) {
+      const tokens = await authUtils.rotateRefreshToken(refreshToken);
+      await addToken(res, tokens);
+      await TokenBlacklist.addToBlacklist(refreshToken);
+      return tokens;
+    }
+
+    // 아니면 뭐 걍 지혼자 하라해
+    const refreshTokenPayload = jwt.verify(
+      refreshToken,
+      JWT_CONFIG.REFRESH_SECRET,
+    ) as JwtPayload;
+    const oldId = refreshTokenPayload.id;
+    const oldRole = refreshTokenPayload.role;
+    const tokens = authUtils.generateTokens({ id: oldId, role: oldRole });
+    await TokenBlacklist.addToBlacklist(refreshToken);
+    await addToken(res, tokens);
+    return tokens;
+  } catch (error) {
+    handleAuthError(error, res);
   }
 }

@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../service/auth.service';
-import {
-  AuthError,
-  InvalidInformationError,
-  WrongCodeError,
-} from '@type/error.type';
+import { InvalidInformationError, WrongCodeError } from '@type/error.type';
 import { StudentRegistrationDto } from '@type/auth.dto';
-import { addToken, handleAuthError } from './auth.controller';
+import { addToken } from './auth.controller';
+import { handleAuthError } from '@/shared/utils/handle.utils';
 
 function isStudentRegistrationDto(body: any): body is StudentRegistrationDto {
   return (
