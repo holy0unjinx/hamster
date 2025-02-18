@@ -20,6 +20,7 @@ import { TokenBlacklist } from '../model/tokenBlacklist.model';
 import { Request, Response } from 'express';
 import { addToken } from '../controller/auth.controller';
 import { handleAuthError } from '@/shared/utils/handle.utils';
+import { logger } from '@/shared/utils/logger';
 
 export class AuthService {
   async registerStudent(registrationData: StudentRegistrationDto) {

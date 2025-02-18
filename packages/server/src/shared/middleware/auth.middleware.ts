@@ -8,18 +8,23 @@ import { TokenBlacklist } from '@/modules/auth/model/tokenBlacklist.model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JWT_CONFIG } from '../config/jwt.config';
 import { refreshToken } from '@/modules/auth/service/auth.service';
+import { logger } from '../utils/logger';
 
 export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const accessToken = req.cookies['access-token'];
+  let accessToken = req.cookies['access-token'];
 
   try {
-    const refreshToken_ = req.cookies['refresh-token'];
+    let refreshToken_ = req.cookies['refresh-token'];
     if (!refreshToken_) throw new AuthRequiredError();
-    if (!accessToken) await refreshToken(req, res);
+    if (!accessToken) {
+      const tokens = await refreshToken(req, res);
+      accessToken = tokens?.accessToken;
+      refreshToken_ = tokens?.accessToken;
+    }
 
     const isBlacklisted = await TokenBlacklist.isTokenBlacklisted(accessToken);
     if (isBlacklisted) throw new InvalidTokenError();
