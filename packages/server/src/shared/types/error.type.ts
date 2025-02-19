@@ -1,4 +1,4 @@
-export class AuthError extends Error {
+export class AppError extends Error {
   public statusCode: number;
 
   constructor(
@@ -22,31 +22,31 @@ export class AuthError extends Error {
   }
 }
 
-export class InsufficientAuthorityError extends AuthError {
+export class InsufficientAuthorityError extends AppError {
   constructor() {
     super('INSUFFICIENT_AUTHORITY', 401, '권한이 부족합니다');
   }
 }
 
-export class InvalidInformationError extends AuthError {
+export class InvalidInformationError extends AppError {
   constructor() {
     super('INVALID_INFORMATION', 400, '잘못된 정보가 제공되었습니다.');
   }
 }
 
-export class WrongCodeError extends AuthError {
+export class WrongCodeError extends AppError {
   constructor() {
     super('WRONG_CODE', 400, '잘못된 코드가 제공되었습니다.');
   }
 }
 
-export class InvalidCredentialsError extends AuthError {
+export class InvalidCredentialsError extends AppError {
   constructor() {
     super('INVALID_CREDENTIALS', 401, '잘못된 자격증명입니다.');
   }
 }
 
-export class AccountInactiveError extends AuthError {
+export class AccountInactiveError extends AppError {
   constructor() {
     super(
       'ACCOUNT_INACTIVE',
@@ -56,37 +56,37 @@ export class AccountInactiveError extends AuthError {
   }
 }
 
-export class AuthRequiredError extends AuthError {
+export class AuthRequiredError extends AppError {
   constructor() {
     super('AUTH_REQUIRED', 401, '로그인이 필요한 서비스입니다.');
   }
 }
 
-export class UserExistError extends AuthError {
+export class UserExistError extends AppError {
   constructor() {
     super('USER_EXIST', 409, '사용자가 이미 존재합니다.');
   }
 }
 
-export class InvalidTokenError extends AuthError {
+export class InvalidTokenError extends AppError {
   constructor() {
     super('INVALID_TOKEN', 403, '유효하지 않은 인증 토큰입니다.');
   }
 }
 
-export class TokenExpiredError extends AuthError {
+export class TokenExpiredError extends AppError {
   constructor() {
     super('TOKEN_EXPIRED', 401, '만료된 토큰입니다.');
   }
 }
 
-export class UserNotFoundError extends AuthError {
+export class UserNotFoundError extends AppError {
   constructor() {
     super('USER_NOT_FOUND', 404, '존재하지 않는 사용자 입니다.');
   }
 }
 
-export class AuthenticationError extends AuthError {
+export class AuthenticationError extends AppError {
   constructor(message: string) {
     super('AUTHENTICATION_ERROR', 401, message);
   }

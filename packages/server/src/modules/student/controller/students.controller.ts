@@ -3,7 +3,7 @@ import {
   InsufficientAuthorityError,
   InvalidInformationError,
 } from '@/shared/types/error.type';
-import { handleAuthError } from '@/shared/utils/handle.utils';
+import { handleError } from '@/shared/utils/handle.utils';
 import { Request, Response } from 'express';
 
 export class StudentController {
@@ -15,7 +15,7 @@ export class StudentController {
       });
       res.status(201).json({ success: true, data: student });
     } catch (error) {
-      handleAuthError(error, res);
+      handleError(error, res);
     }
   }
 
@@ -33,7 +33,7 @@ export class StudentController {
       });
       res.status(201).json({ success: true, data: students });
     } catch (error) {
-      handleAuthError(error, res);
+      handleError(error, res);
     }
   }
 }

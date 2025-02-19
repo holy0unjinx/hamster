@@ -3,15 +3,14 @@ import { AuthService } from '../service/auth.service';
 import { InvalidInformationError } from '@type/error.type';
 import { TeacherRegistrationDto } from '@type/auth.dto';
 import { addToken } from './auth.controller';
-import { handleAuthError } from '@/shared/utils/handle.utils';
+import { handleError } from '@/shared/utils/handle.utils';
 
 function isTeacherRegistrationDto(body: any): body is TeacherRegistrationDto {
   // 필수 필드 검증
   const hasRequiredFields =
     typeof body.email === 'string' &&
     typeof body.password === 'string' &&
-    typeof body.name === 'string' &&
-    typeof body.subject === 'string';
+    typeof body.name === 'string';
 
   // 선택적 필드 검증
   const hasValidTeachersOffice =
@@ -29,7 +28,7 @@ function isTeacherRegistrationDto(body: any): body is TeacherRegistrationDto {
     'email',
     'password',
     'name',
-    'subject',
+    'subjectId',
     'teachersOffice',
     'homeroomClass',
   ];
@@ -56,7 +55,7 @@ export class TeacherAuthController {
       await addToken(res, tokens);
       res.status(201).json({ success: true, data: tokens });
     } catch (error) {
-      handleAuthError(error, res);
+      handleError(error, res);
     }
   }
 
@@ -67,7 +66,7 @@ export class TeacherAuthController {
       await addToken(res, tokens);
       res.json({ success: true, data: tokens });
     } catch (error) {
-      handleAuthError(error, res);
+      handleError(error, res);
     }
   }
 }

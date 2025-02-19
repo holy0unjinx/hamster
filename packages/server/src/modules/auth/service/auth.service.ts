@@ -19,7 +19,7 @@ import { Token } from '@type/jwt.type';
 import { TokenBlacklist } from '../model/tokenBlacklist.model';
 import { Request, Response } from 'express';
 import { addToken } from '../controller/auth.controller';
-import { handleAuthError } from '@/shared/utils/handle.utils';
+import { handleError } from '@/shared/utils/handle.utils';
 import { logger } from '@/shared/utils/logger';
 
 export class AuthService {
@@ -167,6 +167,6 @@ export async function refreshToken(req: Request, res: Response) {
     await addToken(res, tokens);
     return tokens;
   } catch (error) {
-    handleAuthError(error, res);
+    handleError(error, res);
   }
 }

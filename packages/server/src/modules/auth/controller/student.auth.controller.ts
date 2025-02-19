@@ -3,7 +3,7 @@ import { AuthService } from '../service/auth.service';
 import { InvalidInformationError, WrongCodeError } from '@type/error.type';
 import { StudentRegistrationDto } from '@type/auth.dto';
 import { addToken } from './auth.controller';
-import { handleAuthError } from '@/shared/utils/handle.utils';
+import { handleError } from '@/shared/utils/handle.utils';
 
 function isStudentRegistrationDto(body: any): body is StudentRegistrationDto {
   return (
@@ -25,7 +25,7 @@ export class StudentAuthController {
       await addToken(res, tokens);
       res.status(201).json({ success: true, data: tokens });
     } catch (error) {
-      handleAuthError(error, res);
+      handleError(error, res);
     }
   }
 
@@ -39,7 +39,7 @@ export class StudentAuthController {
       await addToken(res, tokens);
       res.json({ success: true, data: tokens });
     } catch (error) {
-      handleAuthError(error, res);
+      handleError(error, res);
     }
   }
 
@@ -51,7 +51,7 @@ export class StudentAuthController {
       await this.authService.activateStudent(id);
       res.json({ success: true });
     } catch (error) {
-      handleAuthError(error, res);
+      handleError(error, res);
     }
   }
 }

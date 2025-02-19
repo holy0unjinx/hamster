@@ -8,7 +8,7 @@ export interface TeacherRegistrationDto {
   email: string;
   password: string;
   name: string;
-  subject: string;
+  subjectId: number;
   teachersOffice?: 1 | 2 | 3;
   homeroomClass?:
     | 11

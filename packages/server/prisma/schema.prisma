@@ -24,7 +24,8 @@ model Teacher {
   email           String   @unique
   passwordHash    String   @map("password_hash")
   name            String
-  subject         String
+  subjectId       Int      @map("subject_id")  // 추가된 필드
+  subject         Subject  @relation(fields: [subjectId], references: [id])  // 관계 설정
   teachersOffice  Int?  @map("teachers_office")
   homeroomClass   Int?  @map("homeroom_class")
   createdAt       DateTime @default(now()) @map("created_at")
@@ -44,6 +45,7 @@ model Subject {
   subjectName          String                  @map("subject_name")
   grade                Int
   performanceAssessments Assessment[]
+  Teacher                Teacher[]
 }
 
 model Assessment {
