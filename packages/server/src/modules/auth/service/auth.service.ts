@@ -9,7 +9,7 @@ import {
   InvalidCredentialsError,
   InvalidTokenError,
   TokenExpiredError,
-  UserExistError,
+  UserAlreadyExistError,
   UserNotFoundError,
 } from '@/shared/types/error.type';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -20,18 +20,17 @@ import { TokenBlacklist } from '../model/tokenBlacklist.model';
 import { Request, Response } from 'express';
 import { addToken } from '../controller/auth.controller';
 import { handleError } from '@/shared/utils/handle.utils';
-import { logger } from '@/shared/utils/logger';
 
 export class AuthService {
   async registerStudent(registrationData: StudentRegistrationDto) {
     const { studentNumber, password, ...profileData } = registrationData;
 
-    // 사용자가 존재하면 (학번으로 탐색) 오류류
+    // 사용자가 존재하면 (학번으로 탐색) 오류
     const existingUser = await prisma.student.findUnique({
       where: { studentNumber },
     });
     if (existingUser) {
-      throw new UserExistError();
+      throw new UserAlreadyExistError();
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -79,7 +78,7 @@ export class AuthService {
       where: { email },
     });
     if (existingUser) {
-      throw new UserExistError();
+      throw new UserAlreadyExistError();
     }
 
     const passwordHash = await bcrypt.hash(password, 10);

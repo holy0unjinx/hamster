@@ -1,5 +1,9 @@
 import prisma from '@/shared/config/database';
+import { ROLE } from '@/shared/types/auth.dto';
+import { InvalidQueryError } from '@/shared/types/error.type';
 import { handleError } from '@/shared/utils/handle.utils';
+import { validateRole } from '@/shared/utils/role.utils';
+import { validateField } from '@/shared/utils/validation.utils';
 import { Request, Response } from 'express';
 
 export class AssessmentController {
@@ -7,11 +11,11 @@ export class AssessmentController {
   async checkAssessments(req: Request, res: Response) {
     try {
       if (!req.query.subjectId)
-        throw new Error('subjectId 필드가 작성되지 않았습니다.');
+        throw new InvalidQueryError('subjectId 필드가 작성되지 않았습니다.');
       const assessments = await prisma.assessment.findMany({
         where: { subjectId: parseInt(req.query.subjectId as string) },
       });
-      res.status(201).json({ success: true, assessments });
+      res.status(200).json({ success: true, assessments });
     } catch (error) {
       handleError(error, res);
     }
@@ -19,16 +23,33 @@ export class AssessmentController {
 
   async addAssessment(req: Request, res: Response) {
     try {
-      const { subjectId, title, description, maxScore } = req.body;
-      if (!subjectId || !title || !maxScore)
-        throw new Error('필드 작성 안하셨어요^^');
-      const subjectId_ = parseInt(subjectId as string);
-      const maxScore_ = parseFloat(maxScore as string);
+      validateRole(req.user, [ROLE.TEACHER, ROLE.ADMIN]);
+      const subjectId = validateField({
+        name: 'subjectId',
+        type: Number,
+        raw: req.body.subjectId,
+      });
+      const title = validateField({
+        name: 'title',
+        type: String,
+        raw: req.body.title,
+      });
+      const description = validateField({
+        name: 'description',
+        type: String,
+        raw: req.body.description,
+      });
+      let maxScore = validateField({
+        name: 'maxScore',
+        type: String,
+        raw: req.body.maxScore,
+      });
+      maxScore = parseFloat(maxScore as string);
       const assessment = await prisma.assessment.create({
         data: {
-          subjectId: subjectId_,
+          subjectId,
           title,
-          maxScore: maxScore_,
+          maxScore,
           description,
         },
       });

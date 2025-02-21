@@ -8,7 +8,7 @@ import subjectRouter from '@modules/subject/routes';
 const router = express.Router();
 
 router.use('/auth', authRouter);
-router.use('/students', studentRouter);
+router.use('/student', studentRouter);
 router.use('/schedule', scheduleRouter);
 router.use('/assessment', assessmentRouter);
 router.use('/subject', subjectRouter);

@@ -4,6 +4,12 @@ export interface StudentRegistrationDto {
   name: string;
 }
 
+export const ROLE = {
+  TEACHER: 'teacher',
+  STUDENT: 'student',
+  ADMIN: 'john',
+};
+
 export interface TeacherRegistrationDto {
   email: string;
   password: string;

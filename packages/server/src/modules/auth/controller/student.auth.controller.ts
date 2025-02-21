@@ -4,24 +4,36 @@ import { InvalidInformationError, WrongCodeError } from '@type/error.type';
 import { StudentRegistrationDto } from '@type/auth.dto';
 import { addToken } from './auth.controller';
 import { handleError } from '@/shared/utils/handle.utils';
-
-function isStudentRegistrationDto(body: any): body is StudentRegistrationDto {
-  return (
-    typeof body.studentNumber === 'number' &&
-    typeof body.password === 'string' &&
-    typeof body.name === 'string' &&
-    Object.keys(body).length === 3 // 정확히 3개의 필드만 있는지 확인
-  );
-}
+import { validateField } from '@/shared/utils/validation.utils';
 
 export class StudentAuthController {
   constructor(private authService: AuthService) {}
 
   async register(req: Request, res: Response) {
     try {
-      if (!req.body || !isStudentRegistrationDto(req.body))
-        throw new InvalidInformationError();
-      const tokens = await this.authService.registerStudent(req.body);
+      const studentNumber = validateField({
+        name: 'studentNumber',
+        type: Number,
+        raw: req.body.studentNumber,
+      });
+      const password = validateField({
+        name: 'password',
+        type: String,
+        raw: req.body.password,
+      });
+      const name = validateField({
+        name: 'name',
+        type: String,
+        raw: req.body.name,
+        onValidate: (name) => {
+          return name.length > 1 || name.length < 6;
+        },
+      });
+      const tokens = await this.authService.registerStudent({
+        studentNumber,
+        password,
+        name,
+      });
       await addToken(res, tokens);
       res.status(201).json({ success: true, data: tokens });
     } catch (error) {
@@ -31,7 +43,16 @@ export class StudentAuthController {
 
   async login(req: Request, res: Response) {
     try {
-      const { studentNumber, password } = req.body;
+      const studentNumber = validateField({
+        name: 'studentNumber',
+        type: Number,
+        raw: req.body.studentNumber,
+      });
+      const password = validateField({
+        name: 'password',
+        type: String,
+        raw: req.body.password,
+      });
       const tokens = await this.authService.loginStudent(
         studentNumber,
         password,
@@ -45,7 +66,16 @@ export class StudentAuthController {
 
   async activate(req: Request, res: Response) {
     try {
-      const { id, activationCode } = req.body;
+      const id = validateField({
+        name: 'id',
+        type: Number,
+        raw: req.body.id,
+      });
+      const activationCode = validateField({
+        name: 'activationCode',
+        type: String,
+        raw: req.body.activationCode,
+      });
       if (activationCode !== process.env.ACTIVATION_CODE)
         throw new WrongCodeError();
       await this.authService.activateStudent(id);

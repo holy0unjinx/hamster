@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import {
-  AuthRequiredError,
+  UnauthorizedError,
   InvalidTokenError,
   TokenExpiredError,
 } from '../types/error.type';
@@ -19,7 +19,7 @@ export const authMiddleware = async (
 
   try {
     let refreshToken_ = req.cookies['refresh-token'];
-    if (!refreshToken_) throw new AuthRequiredError();
+    if (!refreshToken_) throw new UnauthorizedError();
     if (!accessToken) {
       const tokens = await refreshToken(req, res);
       accessToken = tokens?.accessToken;
