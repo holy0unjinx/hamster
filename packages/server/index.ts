@@ -12,7 +12,7 @@ dotenv.config();
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const app = express();
-const port = process.env.PORT || 5173;
+const port = process.env.PORT || 22;
 
 app.use(cookieParser());
 app.use(httpLogger);
