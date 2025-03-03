@@ -1,13 +1,13 @@
 {
   "name": "@hamster/server",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "index.ts",
   "author": "holy_unjinx (신성은진)",
   "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch index.ts",
-    "build": "prisma generate && tsc && node -r tsconfig-paths/register dist/index.js",
+    "build": "prisma generate && tsc",
     "start": "node -r tsconfig-paths/register dist/index.js"
   },
   "dependencies": {
