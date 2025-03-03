@@ -1,0 +1,201 @@
+@use 'palette' as *;
+
+.home {
+  background-color: $background;
+  width: 100%;
+
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    a {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      color: $description;
+      text-decoration: none;
+      font-size: 1.2rem;
+
+      svg {
+        font-size: 1.5rem;
+        color: $icon;
+        padding-right: 0.5rem;
+      }
+    }
+
+    .right {
+      padding: 1rem;
+      padding-right: 1.2rem;
+      background-color: $background;
+      outline: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      height: 100%;
+
+      svg {
+        font-size: 1.5rem;
+        color: $icon;
+      }
+    }
+  }
+
+  .announcement {
+    background-color: $foreground;
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: 1rem;
+
+    img {
+      width: 100%;
+      border-radius: 1rem;
+      display: block;
+    }
+
+    @media (min-width: calc(400px + 1rem)) {
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0;
+      margin-bottom: 1rem;
+
+      img {
+        width: 100%;
+      }
+    }
+  }
+
+  .box {
+    background-color: $foreground;
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: 1rem;
+    padding-bottom: 0.01px;
+
+    @media (min-width: calc(400px + 1rem)) {
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    &:last-child {
+      padding-bottom: 4rem;
+    }
+
+    .title {
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem;
+        color: $text;
+        text-decoration: none;
+        font-size: 1.4rem;
+
+        svg {
+          font-size: 1rem;
+          color: $chevron;
+          padding-left: 0.5rem;
+        }
+      }
+    }
+
+    .timetable {
+      margin: 1rem;
+      margin-top: 0;
+
+      p {
+        margin: 0;
+        text-align: center;
+        color: $description;
+        font-size: 1rem;
+        padding-bottom: 0.5rem;
+      }
+
+      ol {
+        list-style-type: none;
+        padding-left: 0;
+        counter-reset: item;
+        margin-top: 0;
+        border-radius: 1rem;
+        overflow: hidden;
+
+        li {
+          display: flex;
+          align-items: center;
+          background-color: $button;
+          color: $text;
+          flex-grow: 1;
+          font-size: 1.2rem;
+
+          &::before {
+            content: counter(item) '';
+            counter-increment: item;
+            width: 2rem;
+            height: 100%;
+            background-color: $border;
+            color: $text;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.3rem;
+            margin-right: 1rem;
+            font-weight: 900;
+            font-size: 1.2rem;
+          }
+
+          .badge {
+            margin-left: 5px;
+          }
+
+          &.disabled {
+            opacity: 0.5;
+          }
+        }
+      }
+    }
+
+    .assessment {
+      display: block;
+      margin: 1rem;
+      margin-top: 0;
+      .container {
+        display: flex;
+        .icon {
+          background-color: $button;
+          justify-content: center;
+          align-items: center;
+          border-radius: 1rem;
+          font-size: 2.5rem;
+          padding: 1rem;
+          margin-right: 1rem;
+        }
+        .content {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          .head {
+            display: flex;
+            width: 100%;
+            font-size: 0.75rem;
+            align-items: center;
+          }
+          .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+          }
+        }
+      }
+      .date {
+        color: $description;
+        margin-left: auto;
+        margin-right: 1rem;
+        width: fit-content;
+      }
+    }
+  }
+}

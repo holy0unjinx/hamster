@@ -1,0 +1,58 @@
+@use 'palette' as *;
+@use 'sass:color';
+
+.timetable-component {
+  margin: 1rem;
+  height: calc(100vh - 10rem);
+  display: block;
+  .header {
+    margin: 0;
+    .date {
+      color: $blue;
+      font-size: 1rem;
+    }
+    .title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+  }
+  .table-container {
+    display: grid;
+    grid-template-columns: 1.2rem repeat(5, 1fr); // 제목열 포함 6열
+    grid-template-rows: 1.2rem repeat(7, 1fr); // 제목행 포함 8행
+    background: $foreground;
+    border: 1px solid $border;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-sizing: border-box;
+    height: 100%; // 부모 높이 기준
+
+    .cell {
+      border-top: 1px solid $border;
+      border-left: 1px solid $border;
+      box-sizing: border-box;
+
+      // 제목열 스타일
+      &:nth-child(6n + 1) {
+        background: color.adjust($foreground, $lightness: 5%);
+        color: $description;
+      }
+
+      // 제목행 스타일
+      &:nth-child(-n + 6) {
+        background: color.adjust($foreground, $lightness: 5%);
+        color: $description;
+      }
+
+      &.subject {
+        background-color: $button;
+      }
+
+      &.assessment {
+        background-color: $blue;
+        font-weight: bold;
+      }
+    }
+  }
+}
