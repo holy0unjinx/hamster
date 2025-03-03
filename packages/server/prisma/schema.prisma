@@ -1,5 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+    output   = "./node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Student {
@@ -87,7 +93,3 @@ model TokenBlacklist {
   invalidated_at  DateTime  @default(now())
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
