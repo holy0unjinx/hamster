@@ -14,7 +14,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'production'; // 수정됨
 
 const app = express();
 // 포트 번호를 환경 변수에서 가져오도록 변경 [4][8]
-const port = process.env.PORT || 443; // 수정됨
+const PORT = process.env.PORT || 5173; // 수정됨
 
 app.use(cookieParser());
 app.use(httpLogger);
@@ -29,8 +29,10 @@ app.use('/', (req, res) => {
 });
 app.use('/api', router);
 
-app.listen(port, () => {
-  console.log(`http://localhost:${port}/api 에서 대기중...`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`로컬 서버 실행: http://localhost:${PORT}`);
+  });
+}
 
 export default app;
