@@ -8,9 +8,11 @@ const morganFormat = morgan.compile(
 );
 
 export const httpLogger: RequestHandler = morgan(morganFormat, {
-  stream: split().on('data', (line: string) => {
-    logger.http(line.trim());
-  }),
+  stream: {
+    write: (message: string) => {
+      logger.http(message.trim());
+    },
+  },
   skip: (req: any) => req.path === '/healthcheck',
 });
 

@@ -33,9 +33,13 @@ const logFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
   )}`;
 });
 
+const getLogPath = (filename: string) => {
+  return process.env.VERCEL ? `/tmp/logs/${filename}` : `logs/${filename}`;
+};
+
 const transports: Transport[] = [
   new DailyRotateFile({
-    filename: 'logs/application-%DATE%.log',
+    filename: getLogPath('application-%DATE%.log'),
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxSize: '20m',
@@ -56,12 +60,12 @@ const transports: Transport[] = [
 
 if (process.env.NODE_ENV === 'production') {
   transports.push(
-    new (require('winston/lib/winston/transports').Http)({
+    new winston.transports.Http({
       level: 'error',
-      host: 'monitoring.hamster.com',
+      host: process.env.LOGGING_SERVICE_HOST,
       path: '/api/logs',
       ssl: true,
-    }) as Transport, // 타입 단언 추가
+    }),
   );
 }
 
@@ -83,13 +87,13 @@ export const logger = winston.createLogger({
   transports,
   exceptionHandlers: [
     new DailyRotateFile({
-      filename: 'logs/exceptions-%DATE%.log',
+      filename: getLogPath('application-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
     }),
   ],
   rejectionHandlers: [
     new DailyRotateFile({
-      filename: 'logs/rejections-%DATE%.log',
+      filename: getLogPath('application-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
     }),
   ],
