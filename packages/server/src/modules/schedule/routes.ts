@@ -1,4 +1,4 @@
-import { authMiddleware } from '@/shared/middleware/auth.middleware';
+import { authMiddleware } from '../../shared/middleware/auth.middleware';
 import express from 'express';
 import { ScheduleController } from './controller/schedule.controller';
 

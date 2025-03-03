@@ -1,4 +1,4 @@
-import prisma from '@config/database';
+import prisma from '../../../shared/config/database';
 import jwt from 'jsonwebtoken';
 
 export class TokenBlacklist {

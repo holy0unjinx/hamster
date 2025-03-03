@@ -3,11 +3,11 @@ import { AuthService } from '../service/auth.service';
 import {
   InvalidCredentialsError,
   InvalidInformationError,
-} from '@type/error.type';
-import { TeacherRegistrationDto } from '@type/auth.dto';
+} from '../../../shared/types/error.type';
+import { TeacherRegistrationDto } from '../../../shared/types/auth.dto';
 import { addToken } from './auth.controller';
-import { handleError } from '@/shared/utils/handle.utils';
-import { validateField } from '@/shared/utils/validation.utils';
+import { handleError } from '../../../shared/utils/handle.utils';
+import { validateField } from '../../../shared/utils/validation.utils';
 import { Prisma } from '@prisma/client';
 
 function isTeacherRegistrationDto(body: any) {

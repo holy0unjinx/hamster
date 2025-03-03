@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { JWT_CONFIG } from '@config/jwt.config';
-import { TokenBlacklist } from '@modules/auth/model/tokenBlacklist.model';
-import { InvalidTokenError } from '@type/error.type';
-import { Payload } from '@type/jwt.type';
+import { JWT_CONFIG } from '../config/jwt.config';
+import { TokenBlacklist } from '../../modules/auth/model/tokenBlacklist.model';
+import { InvalidTokenError } from '../types/error.type';
+import { Payload } from '../types/jwt.type';
 
 export const authUtils = {
   // 토큰 생성성

@@ -1,12 +1,12 @@
-import prisma from '@/shared/config/database';
-import { ROLE } from '@/shared/types/auth.dto';
+import prisma from '../../../shared/config/database';
+import { ROLE } from '../../../shared/types/auth.dto';
 import {
   InsufficientAuthorityError,
   InvalidQueryError,
   UserNotFoundError,
-} from '@/shared/types/error.type';
-import { handleError } from '@/shared/utils/handle.utils';
-import { validateRole } from '@/shared/utils/role.utils';
+} from '../../../shared/types/error.type';
+import { handleError } from '../../../shared/utils/handle.utils';
+import { validateRole } from '../../../shared/utils/role.utils';
 import { Request, Response } from 'express';
 
 export class StudentController {

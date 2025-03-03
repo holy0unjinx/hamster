@@ -1,4 +1,4 @@
-import { authMiddleware } from '@/shared/middleware/auth.middleware';
+import { authMiddleware } from '../../shared/middleware/auth.middleware';
 import { NextFunction, Request, Response } from 'express';
 import express from 'express';
 import { AssessmentController } from './controller/assessment.controller';

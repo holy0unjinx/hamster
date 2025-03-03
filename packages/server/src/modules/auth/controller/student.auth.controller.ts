@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../service/auth.service';
-import { InvalidInformationError, WrongCodeError } from '@type/error.type';
-import { StudentRegistrationDto } from '@type/auth.dto';
+import {
+  InvalidInformationError,
+  WrongCodeError,
+} from '../../../shared/types/error.type';
 import { addToken } from './auth.controller';
-import { handleError } from '@/shared/utils/handle.utils';
-import { validateField } from '@/shared/utils/validation.utils';
+import { handleError } from '../../../shared/utils/handle.utils';
+import { validateField } from '../../../shared/utils/validation.utils';
 
 export class StudentAuthController {
   constructor(private authService: AuthService) {}

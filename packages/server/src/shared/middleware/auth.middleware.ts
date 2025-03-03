@@ -4,10 +4,10 @@ import {
   InvalidTokenError,
   TokenExpiredError,
 } from '../types/error.type';
-import { TokenBlacklist } from '@/modules/auth/model/tokenBlacklist.model';
+import { TokenBlacklist } from '../../modules/auth/model/tokenBlacklist.model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JWT_CONFIG } from '../config/jwt.config';
-import { refreshToken } from '@/modules/auth/service/auth.service';
+import { refreshToken } from '../../modules/auth/service/auth.service';
 import { logger } from '../utils/logger';
 
 export const authMiddleware = async (

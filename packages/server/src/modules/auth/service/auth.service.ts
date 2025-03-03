@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
-import { authUtils } from '@utils/auth.utils';
+import { authUtils } from '../../../shared/utils/auth.utils';
 import {
   StudentRegistrationDto,
   TeacherRegistrationDto,
-} from '@/shared/types/auth.dto';
+} from '../../../shared/types/auth.dto';
 import {
   AccountInactiveError,
   InvalidCredentialsError,
@@ -11,15 +11,15 @@ import {
   TokenExpiredError,
   UserAlreadyExistError,
   UserNotFoundError,
-} from '@/shared/types/error.type';
+} from '../../../shared/types/error.type';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { JWT_CONFIG } from '@config/jwt.config';
-import prisma from '@config/database';
-import { Token } from '@type/jwt.type';
+import { JWT_CONFIG } from '../../../shared/config/jwt.config';
+import prisma from '../../../shared/config/database';
+import { Token } from '../../../shared/types/jwt.type';
 import { TokenBlacklist } from '../model/tokenBlacklist.model';
 import { Request, Response } from 'express';
 import { addToken } from '../controller/auth.controller';
-import { handleError } from '@/shared/utils/handle.utils';
+import { handleError } from '../../../shared/utils/handle.utils';
 
 export class AuthService {
   async registerStudent(registrationData: StudentRegistrationDto) {

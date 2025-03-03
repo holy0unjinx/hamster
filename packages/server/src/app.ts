@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import express from 'express';
-import v1Router from '@api/v1';
+import v1Router from './api/v1';
 
 const router = express.Router();
 

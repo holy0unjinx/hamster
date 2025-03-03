@@ -3,13 +3,13 @@ import {
   InsufficientAuthorityError,
   InvalidDateFormatError,
   NotFoundError,
-} from '@/shared/types/error.type';
-import { handleError } from '@/shared/utils/handle.utils';
-import prisma from '@/shared/config/database';
-import { validateRole } from '@/shared/utils/role.utils';
-import { ROLE } from '@/shared/types/auth.dto';
-import { validateField } from '@/shared/utils/validation.utils';
-import { parseDateString } from '@/shared/utils/date.utils';
+} from '../../../shared/types/error.type';
+import { handleError } from '../../../shared/utils/handle.utils';
+import prisma from '../../../shared/config/database';
+import { validateRole } from '../../../shared/utils/role.utils';
+import { ROLE } from '../../../shared/types/auth.dto';
+import { validateField } from '../../../shared/utils/validation.utils';
+import { parseDateString } from '../../../shared/utils/date.utils';
 
 export class ScheduleController {
   async addSchedule(req: Request, res: Response) {

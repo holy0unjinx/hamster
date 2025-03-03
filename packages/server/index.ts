@@ -26,3 +26,5 @@ app.use('/api', router);
 app.listen(port, () => {
   console.log(`http://localhost:${port}/api 에서 대기중...`);
 });
+
+export default app;

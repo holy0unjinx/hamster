@@ -1,5 +1,5 @@
-import { InvalidTokenError } from '@type/error.type';
-import { Token } from '@type/jwt.type';
+import { InvalidTokenError } from '../../../shared/types/error.type';
+import { Token } from '../../../shared/types/jwt.type';
 import { Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { TokenBlacklist } from '../model/tokenBlacklist.model';

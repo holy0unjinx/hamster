@@ -7,17 +7,16 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "allowImportingTsExtensions": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "outDir": "./dist",
-    "rootDir": "/",
+    "rootDir": "./",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["src/*"],
@@ -29,6 +28,6 @@
       "@utils/*": ["src/shared/utils/*"]
     }
   },
-  "include": ["index.ts", "src/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

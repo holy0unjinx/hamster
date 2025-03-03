@@ -1,5 +1,5 @@
 import morgan from 'morgan';
-import { createContextLogger, logger } from '@utils/logger';
+import { createContextLogger, logger } from '../utils/logger';
 import { RequestHandler } from 'express';
 import split from 'split';
 

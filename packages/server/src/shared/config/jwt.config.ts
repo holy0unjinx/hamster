@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { logger } from '@utils/logger';
+import { logger } from '../utils/logger';
 dotenv.config();
 
 if (!process.env.REFRESH_SECRET) {

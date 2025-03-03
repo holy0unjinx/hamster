@@ -1,8 +1,8 @@
-import prisma from '@/shared/config/database';
-import { ROLE } from '@/shared/types/auth.dto';
-import { handleError } from '@/shared/utils/handle.utils';
-import { validateRole } from '@/shared/utils/role.utils';
-import { validateField } from '@/shared/utils/validation.utils';
+import prisma from '../../../shared/config/database';
+import { ROLE } from '../../../shared/types/auth.dto';
+import { handleError } from '../../../shared/utils/handle.utils';
+import { validateRole } from '../../../shared/utils/role.utils';
+import { validateField } from '../../../shared/utils/validation.utils';
 import { Request, Response } from 'express';
 
 export class SubjectController {

@@ -1,4 +1,4 @@
-import { LoggerContext } from '@utils/logger';
+import { LoggerContext } from '../utils/logger';
 
 declare global {
   namespace Express {
