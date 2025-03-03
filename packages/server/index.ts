@@ -9,17 +9,20 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+// 환경 변수 기본값을 'production'으로 변경 [5][9]
+process.env.NODE_ENV = process.env.NODE_ENV || 'production'; // 수정됨
 
 const app = express();
-const port = process.env.PORT || 22;
+// 포트 번호를 환경 변수에서 가져오도록 변경 [4][8]
+const port = process.env.PORT || 5173; // 수정됨
 
 app.use(cookieParser());
 app.use(httpLogger);
 app.use(requestContentMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '../public')));
+// 정적 파일 경로 조정 [6][8]
+app.use(express.static(path.join(__dirname, 'public'))); // 수정됨
 
 app.get('/', (req, res) => {
   res.send('hello');
