@@ -14,7 +14,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'production'; // 수정됨
 
 const app = express();
 // 포트 번호를 환경 변수에서 가져오도록 변경 [4][8]
-const port = process.env.PORT || 5173; // 수정됨
+const port = process.env.PORT || 443; // 수정됨
 
 app.use(cookieParser());
 app.use(httpLogger);
