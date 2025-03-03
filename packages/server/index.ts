@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // 정적 파일 경로 조정 [6][8]
 app.use(express.static(path.join(__dirname, 'public'))); // 수정됨
 
-app.get('/', (req, res) => {
+app.use('/', (req, res) => {
   res.send('hello');
 });
 app.use('/api', router);
