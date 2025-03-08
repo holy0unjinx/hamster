@@ -31,7 +31,7 @@ function Login() {
         throw new Error('로그인 실패: 잘못된 계정 정보');
       }
 
-      const result = await response.json();
+      console.log(response);
 
       navigate('/');
     } catch (err: any) {

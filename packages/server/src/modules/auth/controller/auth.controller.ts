@@ -11,7 +11,7 @@ export async function addToken(res: Response, tokens: Token) {
     throw new InvalidTokenError();
   res.cookie('access-token', tokens.accessToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: 'none',
     partitioned: true,
     expires: new Date(accessTokenDecode.exp * 1000),
@@ -22,7 +22,7 @@ export async function addToken(res: Response, tokens: Token) {
     throw new InvalidTokenError();
   res.cookie('refresh-token', tokens.refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: 'none',
     partitioned: true,
     expires: new Date(refreshTokenDecode.exp * 1000),
@@ -45,13 +45,13 @@ export class AuthController {
     res.removeHeader('Authorization');
     res.clearCookie('access-token', {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       partitioned: true,
     });
     res.clearCookie('refresh-token', {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       partitioned: true,
     });
