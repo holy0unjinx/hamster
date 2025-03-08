@@ -1,56 +1,19 @@
-import React from 'react';
 import '../styles/home.scss';
 import { IoSchool, IoSchoolSharp } from 'react-icons/io5';
 import { FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { FaChevronRight } from 'react-icons/fa';
 import Badge from '@/components/Badge';
-// Home 컴포넌트 수정
-import { useRef, useState, useEffect } from 'react';
-
-function ListItem({
-  children,
-  badges,
-}: {
-  children: string;
-  badges: React.ReactNode;
-}) {
-  const textRef = useRef<HTMLDivElement>(null);
-  const [isTruncated, setIsTruncated] = useState(false);
-
-  useEffect(() => {
-    if (textRef.current) {
-      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight);
-      const isMultiLine = textRef.current.scrollHeight > lineHeight * 1.5;
-      setIsTruncated(isMultiLine);
-    }
-  }, []);
-
-  return (
-    <li>
-      <div
-        ref={textRef}
-        className='text-container'
-        style={{
-          display: '-webkit-box',
-          WebkitLineClamp: 1,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}
-      >
-        {children}
-      </div>
-      {!isTruncated && <div className='badge-container'>{badges}</div>}
-    </li>
-  );
-}
+import React, { useState, useEffect } from 'react';
+import Spinner from '@/components/Spinner';
+import { useAuthFetch } from '@/hooks/useAuthFetch';
 
 function Home() {
   return (
     <div className='home'>
       <header>
         <Link to=''>
-          <IoSchool /> 김솔음님
+          <IoSchool /> {localStorage.getItem('name')}님
         </Link>
 
         <button className='right'>

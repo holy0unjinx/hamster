@@ -31,7 +31,20 @@ function Login() {
         throw new Error('로그인 실패: 잘못된 계정 정보');
       }
 
-      console.log(response);
+      const result = await response.json();
+
+      // 올바른 속성으로 쿠키 설정
+      setCookie('access-token', result.data.accessToken, {
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+      });
+
+      setCookie('refresh-token', result.data.refreshToken, {
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+      });
 
       navigate('/');
     } catch (err: any) {
