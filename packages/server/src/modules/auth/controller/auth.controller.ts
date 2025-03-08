@@ -13,6 +13,7 @@ export async function addToken(res: Response, tokens: Token) {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
+    partitioned: true,
     expires: new Date(accessTokenDecode.exp * 1000),
   });
 
@@ -23,6 +24,7 @@ export async function addToken(res: Response, tokens: Token) {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
+    partitioned: true,
     expires: new Date(refreshTokenDecode.exp * 1000),
   });
 
@@ -45,11 +47,13 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      partitioned: true,
     });
     res.clearCookie('refresh-token', {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      partitioned: true,
     });
 
     res.status(201).json({ success: true });
