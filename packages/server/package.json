@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch index.ts",
-    "postinstall": "prisma generate && prisma migrate deploy",
+    "postinstall": "prisma generate",
     "build": "tsc",
     "start": "node -r tsconfig-paths/register dist/index.js"
   },
