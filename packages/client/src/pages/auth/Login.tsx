@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 function Login() {
   const [credentials, setCredentials] = useState({
@@ -8,8 +9,9 @@ function Login() {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(['access-token', 'refresh-token']);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     try {
@@ -20,6 +22,7 @@ function Login() {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify(credentials),
         },
       );
@@ -28,9 +31,9 @@ function Login() {
         throw new Error('로그인 실패: 잘못된 계정 정보');
       }
 
-      const data = await response.json();
-      localStorage.setItem('token', data.token); // 토큰 저장
-      navigate('/'); // 메인 페이지로 리다이렉트
+      const result = await response.json();
+
+      navigate('/');
     } catch (err: any) {
       setError(err.message);
     }

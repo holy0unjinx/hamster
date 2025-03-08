@@ -6,14 +6,15 @@ import Timetable from './pages/Timetable';
 import Calendar from './pages/Calendar';
 import Menu from './pages/Menu';
 import Login from './pages/auth/Login';
+import { useCookies } from 'react-cookie';
 
 function App() {
   const location = useLocation();
   const currentPath = location.pathname.slice(1) || 'home';
+  const [cookies] = useCookies(['access-token', 'refresh-token']);
+
   const checkAuth = () => {
-    const refreshToken = localStorage.getItem('refresh-token');
-    const accessToken = localStorage.getItem('access-token');
-    return !!refreshToken && !!accessToken;
+    return !!cookies['refresh-token'] && !!cookies['access-token'];
   };
   const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     const isAuthenticated = checkAuth();

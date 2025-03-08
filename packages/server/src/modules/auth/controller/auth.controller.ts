@@ -12,7 +12,7 @@ export async function addToken(res: Response, tokens: Token) {
   res.cookie('access-token', tokens.accessToken, {
     httpOnly: true,
     secure: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     expires: new Date(accessTokenDecode.exp * 1000),
   });
 
@@ -22,7 +22,7 @@ export async function addToken(res: Response, tokens: Token) {
   res.cookie('refresh-token', tokens.refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     expires: new Date(refreshTokenDecode.exp * 1000),
   });
 
@@ -44,12 +44,12 @@ export class AuthController {
     res.clearCookie('access-token', {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     res.clearCookie('refresh-token', {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
     });
 
     res.status(201).json({ success: true });
