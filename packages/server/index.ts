@@ -7,6 +7,7 @@ import {
 } from './src/shared/middleware/logging.middleware';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 dotenv.config();
 // 환경 변수 기본값을 'production'으로 변경 [5][9]
@@ -23,6 +24,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // 정적 파일 경로 조정 [6][8]
 app.use(express.static(path.join(__dirname, 'public'))); // 수정됨
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  }),
+);
 
 app.get('/', (req, res) => {
   res.send('hello');
