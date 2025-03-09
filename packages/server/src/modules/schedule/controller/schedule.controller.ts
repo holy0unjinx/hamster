@@ -14,7 +14,6 @@ import { parseDateString } from '../../../shared/utils/date.utils';
 export class ScheduleController {
   async addSchedule(req: Request, res: Response) {
     try {
-      validateRole(req.user, [ROLE.TEACHER, ROLE.ADMIN]);
       const title = validateField({
         name: 'title',
         type: String,
@@ -98,8 +97,6 @@ export class ScheduleController {
 
   async removeSchedule(req: Request, res: Response) {
     try {
-      validateRole(req.user, [ROLE.TEACHER, ROLE.ADMIN]);
-
       const id = validateField({
         name: 'id',
         type: Number,

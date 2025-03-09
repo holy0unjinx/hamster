@@ -1,6 +1,7 @@
 import Badge from '@/components/Badge';
 import '../styles/calendar.scss';
 import React, { useEffect, useState } from 'react';
+import Spinner from '@/components/Spinner';
 
 interface CalendarProps {
   month: number;
@@ -94,15 +95,32 @@ function Calendar({ month = 3, year = 2025 }: CalendarProps) {
 
   // 날짜에 해당하는 이벤트 찾기
   const getEventForDate = (date: Date) => {
-    const dateString = date.toISOString().split('T')[0];
+    // 날짜만 비교하기 위해 년, 월, 일만 추출
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    const compareDate = new Date(year, month, day);
+
     return scheduleEvents.find((event) => {
-      const eventStartDate = new Date(event.startDate)
-        .toISOString()
-        .split('T')[0];
-      const eventEndDate = new Date(event.endDate).toISOString().split('T')[0];
+      // 이벤트 시작일과 종료일도 년, 월, 일만 추출하여 비교
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(event.endDate);
+
+      // 시간 정보를 제거하고 날짜만 비교
+      const eventStart = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate(),
+      );
+
+      const eventEnd = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate(),
+      );
 
       // 날짜가 이벤트 기간 내에 있는지 확인
-      return dateString >= eventStartDate && dateString <= eventEndDate;
+      return compareDate >= eventStart && compareDate <= eventEnd;
     });
   };
 
@@ -116,7 +134,7 @@ function Calendar({ month = 3, year = 2025 }: CalendarProps) {
       </div>
       <div className='table-container'>
         {loading ? (
-          <div className='loading'>일정을 불러오는 중...</div>
+          <Spinner isLoading={true} />
         ) : (
           Array.from({ length: (6 + 1) * (5 + 1) }).map((_, index) => {
             const row = Math.floor(index / 6);
