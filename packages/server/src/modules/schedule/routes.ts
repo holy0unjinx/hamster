@@ -6,8 +6,6 @@ const router = express.Router();
 
 const scheduleController = new ScheduleController();
 
-router.use(authMiddleware);
-
 router.get('/', scheduleController.checkSchedule);
 router.post('/', scheduleController.addSchedule);
 router.delete('/', scheduleController.removeSchedule);

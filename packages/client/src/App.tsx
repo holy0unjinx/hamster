@@ -23,6 +23,22 @@ interface Student {
   };
 }
 
+interface TimetableData {
+  [grade: string]: {
+    [classNum: string]: Array<
+      Array<{
+        grade: number;
+        class: number;
+        weekday: number;
+        weekdayString: string;
+        classTime: number;
+        teacher: string;
+        subject: string;
+      }>
+    >;
+  };
+}
+
 function App() {
   const location = useLocation();
   const currentPath = location.pathname.slice(1) || 'home';
@@ -38,6 +54,76 @@ function App() {
     'https://hamster-server.vercel.app/api/v1/student/me',
     { skip: !checkAuth() },
   );
+
+  const fetchTimetable = async () => {
+    if (!checkAuth()) return;
+
+    try {
+      // 로딩 상태 추가
+      setIsLoadingUserData(true);
+
+      const response = await fetch(
+        'https://hamster-server.vercel.app/api/v1/timetable/api/timetable?schoolCode=62573',
+        {
+          headers: {
+            Authorization: `Bearer ${cookies['access-token']}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `시간표 데이터를 가져오는데 실패했습니다. 상태 코드: ${response.status}`,
+        );
+      }
+
+      const timetableData = await response.json();
+      console.log(timetableData);
+
+      if (timetableData) {
+        // 사용자 학년과 반에 해당하는 시간표 데이터만 필터링
+        const userGrade = localStorage.getItem('grade');
+        const userClass = localStorage.getItem('class');
+
+        if (!userGrade || !userClass) {
+          throw new Error('사용자 학년 또는 반 정보가 없습니다.');
+        }
+
+        const filteredTimetable = timetableData[userGrade]?.[userClass];
+
+        if (filteredTimetable) {
+          // 필터링된 시간표 데이터를 localStorage에 저장
+          localStorage.setItem('timetable', JSON.stringify(filteredTimetable));
+          localStorage.setItem(
+            'timetableLastUpdated',
+            new Date().toISOString(),
+          );
+          console.log(
+            '사용자 학년과 반의 시간표 정보가 localStorage에 저장되었습니다.',
+          );
+
+          // 저장 확인
+          const savedData = localStorage.getItem('timetable');
+          if (!savedData) {
+            console.error(
+              '시간표 데이터가 localStorage에 저장되지 않았습니다.',
+            );
+          }
+        } else {
+          throw new Error(
+            '사용자 학년과 반에 해당하는 시간표 데이터가 없습니다.',
+          );
+        }
+      } else {
+        throw new Error('시간표 데이터 형식이 올바르지 않습니다.');
+      }
+    } catch (err) {
+      console.error('시간표 데이터 가져오기 오류:', err);
+      // 오류 상태 관리를 위한 state 추가 필요
+    } finally {
+      setIsLoadingUserData(false);
+    }
+  };
 
   // 사용자 데이터가 로드되면 localStorage에 개별 필드로 저장
   useEffect(() => {
@@ -55,6 +141,8 @@ function App() {
         localStorage.setItem('number', data.data.number.toString());
 
         console.log('사용자 정보가 localStorage에 저장되었습니다.');
+
+        fetchTimetable();
       } catch (err) {
         console.error('localStorage 저장 중 오류 발생:', err);
       }

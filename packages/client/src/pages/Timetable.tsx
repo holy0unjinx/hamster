@@ -2,23 +2,62 @@ import Badge from '@/components/Badge';
 import '../styles/timetable.scss';
 import React from 'react';
 
+/**
+ * 시간표 항목의 인터페이스 정의
+ */
+interface TimeTableItem {
+  grade: number;
+  class: number;
+  weekday: number;
+  weekdayString: string;
+  classTime: number;
+  teacher: string;
+  subject: string;
+}
+
+/**
+ * 시간표 JSON 데이터를 2차원 배열 형태로 변환하는 함수
+ * @param timetableData - 원본 시간표 JSON 데이터 (5일 x 여러 교시)
+ * @returns 변환된 2차원 배열 시간표 (5일 x 8교시)
+ */
+function convertToTimeTable(jsonString: string): string[][] {
+  // JSON 문자열을 파싱
+  const rawData: TimeTableItem[][] = JSON.parse(jsonString);
+
+  // 결과를 저장할 2차원 배열 초기화 (5일 x 8교시)
+  const timeTable: string[][] = Array(5)
+    .fill(null)
+    .map(() => Array(8).fill(''));
+
+  // 각 요일별 데이터 처리
+  rawData.forEach((dayData) => {
+    dayData.forEach((item) => {
+      if (
+        item.weekday >= 0 &&
+        item.weekday < 5 &&
+        item.classTime > 0 &&
+        item.classTime <= 8
+      ) {
+        // 요일(행)과 교시(열)에 맞게 과목명 할당
+        // 교시는 1부터 시작하므로 인덱스 조정
+        timeTable[item.weekday][item.classTime] = item.subject;
+      }
+    });
+  });
+
+  return timeTable;
+}
+
 function Timetable() {
   const days = ['월', '화', '수', '목', '금'];
   const periods = 7;
-
-  const data = [
-    ['', '국어', '수학', '과학', '기술', '가정', '체육', ''],
-    ['', '도덕', '영어', '사회', '역사', '진로', '미술', '가정'],
-    ['', '기술', '수학', '가정', '국어', '과학 (수행평가)', '', ''],
-    ['', '체육', '도덕', '영어', '가정', '역사', '수학', '수학'],
-    ['', '국어', '진로', '사회', '기술', '과학', '체육', ''],
-  ];
+  const data = convertToTimeTable(localStorage.getItem('timetable')!);
 
   return (
     <div className='timetable-component'>
       <div className='header'>
         <div className='date'>2025년 1학기</div>
-        <div className='title'>시간표 (김솔음)</div>
+        <div className='title'>시간표 ({localStorage.getItem('name')})</div>
       </div>
       <div className='table-container'>
         {Array.from({ length: 6 * 8 }).map((_, index) => {

@@ -9,6 +9,70 @@ import Spinner from '@/components/Spinner';
 import { useAuthFetch } from '@/hooks/useAuthFetch';
 
 function Home() {
+  const [timetable, setTimetable] = useState([]);
+  const [targetDate, setTargetDate] = useState('');
+
+  useEffect(() => {
+    // localStorage에서 시간표 데이터 가져오기
+    interface TimetableItem {
+      grade: number;
+      class: number;
+      weekday: number;
+      weekdayString: string;
+      classTime: number;
+      teacher: string;
+      subject: string;
+    }
+
+    // localStorage에서 데이터를 가져올 때 타입 지정
+    const timetableString = localStorage.getItem('timetable');
+    const timetableData: TimetableItem[][] = timetableString
+      ? JSON.parse(timetableString)
+      : [];
+
+    if (timetableString) {
+      try {
+        const timetableData = JSON.parse(timetableString);
+
+        // 현재 날짜와 요일 계산
+        const currentDate = new Date();
+        const currentWeekday = currentDate.getDay(); // 0: 일요일, 1: 월요일, ...
+
+        // 요일 매핑 (일요일=0 → 월요일=0으로 변환)
+        let targetWeekday;
+        let newTargetDate;
+
+        // 주말인 경우(토요일 또는 일요일) 다음 주 월요일로 설정
+        if (currentWeekday === 0 || currentWeekday === 6) {
+          // 다음 월요일까지 남은 일수 계산
+          const daysToNextMonday = currentWeekday === 0 ? 1 : 2;
+          newTargetDate = new Date(currentDate);
+          newTargetDate.setDate(currentDate.getDate() + daysToNextMonday);
+          targetWeekday = 0; // 월요일
+        } else {
+          // 평일인 경우 현재 날짜 사용
+          newTargetDate = currentDate;
+          // 일요일=0을 월요일=0으로 변환 (API 데이터 형식에 맞춤)
+          targetWeekday = currentWeekday - 1;
+        }
+
+        // 날짜 형식 지정 (YYYY-MM-DD)
+        const formattedDate = newTargetDate.toISOString().split('T')[0];
+        setTargetDate(formattedDate);
+
+        // 해당 요일의 시간표 추출
+        const todayTimetable = timetableData[targetWeekday];
+
+        // '스클3' 과목 제외한 시간표 설정
+        const filteredTimetable = todayTimetable.filter(
+          (entry: { classTime: number }) => entry.classTime !== 8,
+        );
+        setTimetable(filteredTimetable);
+      } catch (error) {
+        console.error('시간표 데이터 파싱 오류:', error);
+      }
+    }
+  }, []);
   return (
     <div className='home'>
       <header>
@@ -32,26 +96,27 @@ function Home() {
           </Link>
         </div>
         <div className='timetable'>
-          <p>20■■-09-13 (1-5)</p>
+          <p>
+            {targetDate} ({localStorage.getItem('grade')}-
+            {localStorage.getItem('class')})
+          </p>
           <ol>
-            <li>
-              수학 <Badge content='백사헌T' />
-            </li>
-            <li>정보통신윤리및... </li>
-            <li>
-              일본어 <Badge content='은하제T' />{' '}
-              <Badge content='수행평가' background='0, 50, 150, 0.25' />
-            </li>
-            <li>
-              기술 <Badge content='류재관T' />
-            </li>
-            <li>
-              스포츠클럽 <Badge content='이자헌T' />
-            </li>
-            <li>
-              주제선택 <Badge content='제이삼T' />{' '}
-            </li>
-            <li className='disabled'></li>
+            {timetable.map((item: any, index) =>
+              item.subject ? (
+                <li key={index}>
+                  {item.subject}
+                  {item.teacher &&
+                    item.subject !== '스클3' &&
+                    item.subject !== '스클2' &&
+                    item.subject !== '스클1' &&
+                    item.subject !== '주제' && (
+                      <Badge content={`${item.teacher}■`} />
+                    )}
+                </li>
+              ) : (
+                <li key={index} className='disabled'></li>
+              ),
+            )}
           </ol>
         </div>
       </div>
