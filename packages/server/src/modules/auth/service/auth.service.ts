@@ -137,15 +137,15 @@ export async function refreshToken(req: Request, res: Response) {
     const refreshToken = req.cookies['refresh-token'];
     // 뭐 각종 오류 처리
     if (!refreshToken) throw new InvalidTokenError();
-    if (await TokenBlacklist.isTokenBlacklisted(refreshToken))
-      throw new TokenExpiredError();
+    // if (await TokenBlacklist.isTokenBlacklisted(refreshToken))
+    //   throw new TokenExpiredError();
 
     // refresh token 시간 별로 없으면 refresh 토큰 같이 해줌
     const refreshTokenDecode = jwt.decode(refreshToken) as JwtPayload;
     if (!refreshTokenDecode || !refreshTokenDecode.exp)
       throw new InvalidTokenError();
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    const threeDaysInSeconds = 3 * 24 * 60 * 60; // 3일을 초 단위로 변환
+    const threeDaysInSeconds = 7 * 24 * 60 * 60; // 3일을 초 단위로 변환
 
     if (refreshTokenDecode.exp - currentTimestamp <= threeDaysInSeconds) {
       const tokens = await authUtils.rotateRefreshToken(refreshToken);
