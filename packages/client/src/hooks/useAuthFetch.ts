@@ -78,7 +78,6 @@ export const useAuthFetch = (url: string, options = {}) => {
           );
 
           if (!refreshResponse.ok) {
-            throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
           }
 
           // 리프레시 응답 처리 및 쿠키 설정

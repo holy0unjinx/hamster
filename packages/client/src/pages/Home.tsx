@@ -128,7 +128,7 @@ function Home() {
           </Link>
         </div>
         <div className='assessment'>
-          <div className='container'>
+          {/* <div className='container'>
             <div className='icon'>🦅</div>
             <div className='content'>
               <div className='head'>
@@ -137,7 +137,8 @@ function Home() {
               <div className='title'>뉴스 기사 일본어로 번역하기 (20점)</div>
             </div>
           </div>
-          <div className='date'>3. 4. (목) 1교시</div>
+          <div className='date'>3. 4. (목) 1교시</div> */}
+          <div className='no_assessment'>아직 없네요...</div>
         </div>
       </div>
       <div className='box'>

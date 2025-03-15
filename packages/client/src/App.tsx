@@ -10,35 +10,6 @@ import { useCookies } from 'react-cookie';
 import Spinner from './components/Spinner';
 import { useAuthFetch } from './hooks/useAuthFetch';
 
-// 학생 정보 인터페이스 정의
-interface Student {
-  success: boolean;
-  data: {
-    id: number;
-    studentNumber: number;
-    name: string;
-    grade: number;
-    class: number;
-    number: number;
-  };
-}
-
-interface TimetableData {
-  [grade: string]: {
-    [classNum: string]: Array<
-      Array<{
-        grade: number;
-        class: number;
-        weekday: number;
-        weekdayString: string;
-        classTime: number;
-        teacher: string;
-        subject: string;
-      }>
-    >;
-  };
-}
-
 function App() {
   const location = useLocation();
   const currentPath = location.pathname.slice(1) || 'home';
@@ -78,7 +49,6 @@ function App() {
       }
 
       const timetableData = await response.json();
-      console.log(timetableData);
 
       if (timetableData) {
         // 사용자 학년과 반에 해당하는 시간표 데이터만 필터링

@@ -137,8 +137,8 @@ export async function refreshToken(req: Request, res: Response) {
     const refreshToken = req.cookies['refresh-token'];
     // 뭐 각종 오류 처리
     if (!refreshToken) throw new InvalidTokenError();
-    // if (await TokenBlacklist.isTokenBlacklisted(refreshToken))
-    //   throw new TokenExpiredError();
+    if (await TokenBlacklist.isTokenBlacklisted(refreshToken))
+      throw new InvalidTokenError();
 
     // refresh token 시간 별로 없으면 refresh 토큰 같이 해줌
     const refreshTokenDecode = jwt.decode(refreshToken) as JwtPayload;

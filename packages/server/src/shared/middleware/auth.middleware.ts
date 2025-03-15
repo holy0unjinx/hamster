@@ -19,12 +19,7 @@ export const authMiddleware = async (
 
   try {
     let refreshToken_ = req.cookies['refresh-token'];
-    if (!refreshToken_) throw new UnauthorizedError();
-    if (!accessToken) {
-      const tokens = await refreshToken(req, res);
-      accessToken = tokens?.accessToken;
-      refreshToken_ = tokens?.accessToken;
-    }
+    if (!refreshToken_ || !accessToken) throw new UnauthorizedError();
 
     const isBlacklisted = await TokenBlacklist.isTokenBlacklisted(accessToken);
     if (isBlacklisted) throw new InvalidTokenError();
