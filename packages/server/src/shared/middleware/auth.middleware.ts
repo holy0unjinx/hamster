@@ -20,13 +20,16 @@ export const authMiddleware = async (
   try {
     let refreshToken_ = req.cookies['refresh-token'];
     if (!refreshToken_) throw new UnauthorizedError();
-
-    const isBlacklisted = await TokenBlacklist.isTokenBlacklisted(accessToken);
-    if (isBlacklisted) throw new InvalidTokenError();
+    if (accessToken) {
+      const isBlacklisted = await TokenBlacklist.isTokenBlacklisted(
+        accessToken,
+      );
+      if (isBlacklisted) throw new InvalidTokenError();
+    }
 
     const decoded = jwt.verify(
-      accessToken,
-      JWT_CONFIG.ACCESS_SECRET,
+      refreshToken_,
+      JWT_CONFIG.REFRESH_SECRET,
     ) as JwtPayload;
     req.user = {
       id: decoded.id,

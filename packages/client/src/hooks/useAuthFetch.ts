@@ -46,10 +46,18 @@ export const useAuthFetch = (url: string, options = {}) => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        console.log(cookies);
+        console.log(document.cookie);
 
         // 첫 번째 요청 시도
         const response = await fetch(url, {
           ...options,
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Cookie: 'test=value1; test2=value2',
+          },
           credentials: 'include',
           signal,
         });
@@ -71,10 +79,10 @@ export const useAuthFetch = (url: string, options = {}) => {
             'https://hamster-server.vercel.app/api/v1/auth/refresh',
             {
               method: 'POST',
-              credentials: 'include',
               headers: {
                 'Content-Type': 'application/json',
               },
+              credentials: 'include',
               signal,
             },
           );
@@ -85,10 +93,10 @@ export const useAuthFetch = (url: string, options = {}) => {
               'https://hamster-server.vercel.app/api/v1/auth/logout',
               {
                 method: 'POST',
-                credentials: 'include',
                 headers: {
                   'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 signal,
               },
             );
@@ -99,6 +107,7 @@ export const useAuthFetch = (url: string, options = {}) => {
               expires: new Date(0),
               secure: true,
               sameSite: 'none',
+              maxAge: 15 * 60,
             });
 
             setCookie('refresh-token', '', {
@@ -106,6 +115,7 @@ export const useAuthFetch = (url: string, options = {}) => {
               expires: new Date(0),
               secure: true,
               sameSite: 'none',
+              maxAge: 7 * 24 * 60 * 60,
             });
 
             const message: any = '인증이 만료되었습니다. 다시 로그인해주세요.';
@@ -124,12 +134,14 @@ export const useAuthFetch = (url: string, options = {}) => {
             path: '/',
             secure: true,
             sameSite: 'none',
+            maxAge: 15 * 60,
           });
 
           setCookie('refresh-token', result.data.refreshToken, {
             path: '/',
             secure: true,
             sameSite: 'none',
+            maxAge: 7 * 24 * 60 * 60,
           });
 
           // 새 토큰으로 원래 요청 재시도
@@ -145,10 +157,10 @@ export const useAuthFetch = (url: string, options = {}) => {
               'https://hamster-server.vercel.app/api/v1/auth/logout',
               {
                 method: 'POST',
-                credentials: 'include',
                 headers: {
                   'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 signal,
               },
             );

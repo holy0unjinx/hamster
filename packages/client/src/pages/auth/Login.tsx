@@ -38,12 +38,14 @@ function Login() {
         path: '/',
         secure: true,
         sameSite: 'none',
+        maxAge: 15 * 60,
       });
 
       setCookie('refresh-token', result.data.refreshToken, {
         path: '/',
         secure: true,
         sameSite: 'none',
+        maxAge: 7 * 24 * 60 * 60,
       });
 
       navigate('/');

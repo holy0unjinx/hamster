@@ -23,7 +23,6 @@ function App() {
   // 인증된 상태일 때 사용자 정보 가져오기
   const { data, loading, error } = useAuthFetch(
     'https://hamster-server.vercel.app/api/v1/student/me',
-    { skip: !checkAuth() },
   );
 
   const fetchTimetable = async () => {
@@ -35,11 +34,6 @@ function App() {
 
       const response = await fetch(
         'https://hamster-server.vercel.app/api/v1/timetable/api/timetable?schoolCode=62573',
-        {
-          headers: {
-            Authorization: `Bearer ${cookies['access-token']}`,
-          },
-        },
       );
 
       if (!response.ok) {
