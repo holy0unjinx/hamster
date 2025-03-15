@@ -21,50 +21,52 @@ interface TimeTableItem {
  * @returns 요일별, 교시별로 정리된 시간표 배열
  */
 function convertToTimeTable(jsonString: string) {
-  try {
-    // 문자열을 JSON으로 파싱
-    const parsedData = JSON.parse(jsonString);
+  if (!jsonString)
+    return Array(5)
+      .fill([])
+      .map(() => Array(7).fill(null));
 
-    // 학년, 반 정보 가져오기 (localStorage에서 설정된 값 사용 가정)
+  try {
+    const data = JSON.parse(jsonString);
     const grade = localStorage.getItem('grade') || '1';
     const classNum = localStorage.getItem('class') || '1';
 
-    // 해당 학년, 반의 시간표 데이터 가져오기
-    const classData = parsedData[grade]?.[classNum];
+    // 학년과 반에 해당하는 시간표 데이터 가져오기
+    const classData = data[grade]?.[classNum];
 
-    if (!classData) {
-      console.error('시간표 데이터를 찾을 수 없습니다.');
-      return Array(5).fill(Array(7).fill(null));
+    if (!classData || !Array.isArray(classData)) {
+      return Array(5)
+        .fill([])
+        .map(() => Array(7).fill(null));
     }
 
-    // 요일별로 정리된 시간표 생성 (5일 x 7교시)
-    const timetable = Array(5)
-      .fill(null)
+    // 5일(월~금), 7교시 형태의 2차원 배열 생성
+    const result = Array(5)
+      .fill([])
       .map(() => Array(7).fill(null));
 
-    // 각 요일별 데이터 처리
-    classData.forEach((dayData: any, dayIndex: any) => {
-      // 각 교시별 데이터 처리 (7교시까지만)
-      for (let periodIndex = 0; periodIndex < 7; periodIndex++) {
-        const lessonData = dayData[periodIndex];
-
-        // 수업 데이터가 있고 과목명이 있는 경우에만 추가
-        if (lessonData && lessonData.subject) {
-          timetable[dayIndex][periodIndex] = {
-            subject: lessonData.subject,
-            teacher: lessonData.teacher || '',
-            weekday: lessonData.weekday,
-            classTime: lessonData.classTime,
-          };
-        }
+    // 데이터 변환
+    classData.forEach((daySchedule, dayIndex) => {
+      if (dayIndex < 5) {
+        // 월~금까지만 처리
+        daySchedule.forEach((period: any) => {
+          if (period.classTime > 0 && period.classTime <= 7) {
+            // 1~7교시만 처리
+            result[dayIndex][period.classTime - 1] = {
+              subject: period.subject,
+              teacher: period.teacher,
+            };
+          }
+        });
       }
     });
 
-    return timetable;
+    return result;
   } catch (error) {
-    console.error('시간표 변환 중 오류가 발생했습니다:', error);
-    // 오류 발생 시 빈 시간표 반환
-    return Array(5).fill(Array(7).fill(null));
+    console.error('시간표 데이터 변환 중 오류 발생:', error);
+    return Array(5)
+      .fill([])
+      .map(() => Array(7).fill(null));
   }
 }
 

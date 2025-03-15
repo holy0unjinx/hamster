@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie'; // 또는 사용 중인 쿠키 라이브러리
+import { useNavigate } from 'react-router-dom';
 
 interface Student {
   success: boolean;
@@ -36,6 +37,7 @@ export const useAuthFetch = (url: string, options = {}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cookies, setCookie] = useCookies(['access-token', 'refresh-token']);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -78,6 +80,42 @@ export const useAuthFetch = (url: string, options = {}) => {
           );
 
           if (!refreshResponse.ok) {
+            // 로그아웃 API 호출
+            await fetch(
+              'https://hamster-server.vercel.app/api/v1/auth/logout',
+              {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                signal,
+              },
+            );
+
+            // 쿠키 삭제
+            setCookie('access-token', '', {
+              path: '/',
+              expires: new Date(0),
+              secure: true,
+              sameSite: 'none',
+            });
+
+            setCookie('refresh-token', '', {
+              path: '/',
+              expires: new Date(0),
+              secure: true,
+              sameSite: 'none',
+            });
+
+            const message: any = '인증이 만료되었습니다. 다시 로그인해주세요.';
+            // 오류 설정 및 로딩 상태 종료
+            setError(message);
+            setLoading(false);
+
+            // 추가 작업이 필요하면 여기에 구현 (예: 로그인 페이지로 리다이렉트)
+            navigate('/login');
+            return;
           }
 
           // 리프레시 응답 처리 및 쿠키 설정
@@ -102,7 +140,42 @@ export const useAuthFetch = (url: string, options = {}) => {
           });
 
           if (!retryResponse.ok) {
-            throw new Error('서버 응답 오류: ' + retryResponse.status);
+            // 로그아웃 API 호출
+            await fetch(
+              'https://hamster-server.vercel.app/api/v1/auth/logout',
+              {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                signal,
+              },
+            );
+
+            // 쿠키 삭제
+            setCookie('access-token', '', {
+              path: '/',
+              expires: new Date(0),
+              secure: true,
+              sameSite: 'none',
+            });
+
+            setCookie('refresh-token', '', {
+              path: '/',
+              expires: new Date(0),
+              secure: true,
+              sameSite: 'none',
+            });
+
+            const message: any = '인증이 만료되었습니다. 다시 로그인해주세요.';
+            // 오류 설정 및 로딩 상태 종료
+            setError(message);
+            setLoading(false);
+
+            // 추가 작업이 필요하면 여기에 구현 (예: 로그인 페이지로 리다이렉트)
+            navigate('/login');
+            return;
           }
 
           const retryData = await retryResponse.json();
