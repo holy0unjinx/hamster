@@ -18,19 +18,12 @@ function Menu() {
       <div className='category'>기능</div>
       <ul className='menu'>
         <li>
-          <div className='icon'>✒️</div>수행평가 확인
+          <div className='icon'>📆</div>
+          <Link to='/schedule'>학사일정</Link>
         </li>
         <li>
-          <div className='icon'>📆</div>학사일정
-        </li>
-        <li>
-          <div className='icon'>🕒</div>시간표
-        </li>
-        <li>
-          <div className='icon'>🥄</div>급식 확인
-        </li>
-        <li>
-          <div className='icon'>☣️</div>(주) 백일몽
+          <div className='icon'>🕒</div>
+          <Link to='/timetable'>시간표</Link>
         </li>
       </ul>
     </div>

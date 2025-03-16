@@ -17,7 +17,7 @@ function App() {
   const location = useLocation();
   const currentPath = location.pathname.slice(1) || 'home';
   const [cookies] = useCookies(['access-token', 'refresh-token']);
-  const [isLoadingUserData, setIsLoadingUserData] = useState(false);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(true);
 
   const checkAuth = () => {
     return !!cookies['refresh-token'];
@@ -179,7 +179,7 @@ function App() {
 
   return (
     <div className='app'>
-      {isLoadingUserData && <Spinner isLoading={true} text='로딩 중...' />}
+      {<Spinner isLoading={isLoadingUserData} text='로딩 중...' />}
 
       <Routes>
         <Route path='login' element={<Login />} />
@@ -209,14 +209,7 @@ function App() {
           }
         />
 
-        <Route
-          path='policy'
-          element={
-            <ProtectedRoute>
-              <Policy />
-            </ProtectedRoute>
-          }
-        />
+        <Route path='policy' element={<Policy />} />
         <Route
           path='schedule'
           element={

@@ -1,4 +1,5 @@
 @use 'palette' as *;
+@use 'sass:color';
 
 .mypage {
   background-color: $background;
@@ -169,14 +170,14 @@
         transition: background-color 0.2s;
 
         &:hover {
-          background-color: lighten($button, 5%);
+          background-color: color.adjust($button, $lightness: 5%);
         }
 
         &.logout {
           background-color: $alert;
 
           &:hover {
-            background-color: lighten($alert, 5%);
+            background-color: color.adjust($alert, $lightness: 5%);
           }
         }
       }
