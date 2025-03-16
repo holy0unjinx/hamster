@@ -15,7 +15,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'production'; // 수정됨
 
 const app = express();
 // 포트 번호를 환경 변수에서 가져오도록 변경 [4][8]
-const PORT = process.env.PORT || 5173; // 수정됨
+const PORT = process.env.PORT || 3000; // 수정됨
 
 app.use(cookieParser());
 app.use(httpLogger);
@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // 수정됨
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://hamster-client.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   }),
