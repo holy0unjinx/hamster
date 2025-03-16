@@ -76,7 +76,7 @@ function Home() {
   return (
     <div className='home'>
       <header>
-        <Link to=''>
+        <Link to='mypage'>
           <IoSchool /> {localStorage.getItem('name')}님
         </Link>
 

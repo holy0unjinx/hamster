@@ -55,7 +55,75 @@
       }
 
       &.disabled {
-        color: $description;
+        color: $border;
+      }
+
+      &.today {
+        position: relative;
+
+        .date-number {
+          position: relative;
+          z-index: 2;
+
+          &::after {
+            content: '';
+            position: absolute;
+            width: 1.8rem;
+            height: 1.8rem;
+            background-color: $alert;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+          }
+        }
+      }
+
+      // 토요일이 오늘일 때 다음 월요일 스타일
+      &.today-saturday {
+        position: relative;
+
+        .date-number {
+          position: relative;
+          z-index: 2;
+
+          &::after {
+            content: '';
+            position: absolute;
+            width: 1.8rem;
+            height: 1.8rem;
+            background-color: rgba($alert, 0.25); // 33% 투명도
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+          }
+        }
+      }
+
+      // 일요일이 오늘일 때 다음 월요일 스타일
+      &.today-sunday {
+        position: relative;
+
+        .date-number {
+          position: relative;
+          z-index: 2;
+
+          &::after {
+            content: '';
+            position: absolute;
+            width: 1.8rem;
+            height: 1.8rem;
+            background-color: rgba($alert, 0.5); // 66% 투명도
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+          }
+        }
       }
     }
   }

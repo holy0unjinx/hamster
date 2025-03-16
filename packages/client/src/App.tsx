@@ -9,6 +9,9 @@ import Login from './pages/auth/Login';
 import { useCookies } from 'react-cookie';
 import Spinner from './components/Spinner';
 import { useAuthFetch } from './hooks/useAuthFetch';
+import MyPage from './pages/MyPage';
+import Policy from './pages/Policy';
+import Register from './pages/auth/Register';
 
 function App() {
   const location = useLocation();
@@ -17,7 +20,7 @@ function App() {
   const [isLoadingUserData, setIsLoadingUserData] = useState(false);
 
   const checkAuth = () => {
-    return !!cookies['refresh-token'] && !!cookies['access-token'];
+    return !!cookies['refresh-token'];
   };
 
   // 인증된 상태일 때 사용자 정보 가져오기
@@ -89,6 +92,38 @@ function App() {
     }
   };
 
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+
+  useEffect(() => {
+    const fetchScheduleData = async () => {
+      try {
+        // 해당 월의 첫날과 마지막날 계산
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        // API 요청 URL 생성
+        const formattedStartDate = startDate.toISOString().split('T')[0];
+        const formattedEndDate = endDate.toISOString().split('T')[0];
+        const url = `https://hamster-server.vercel.app/api/v1/schedule?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+
+        const response = await fetch(url);
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.setItem('calendar', JSON.stringify(result.data));
+        } else {
+          console.error('일정 데이터를 가져오는데 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('API 요청 중 오류 발생:', error);
+      }
+    };
+
+    fetchScheduleData();
+  });
+
   // 사용자 데이터가 로드되면 localStorage에 개별 필드로 저장
   useEffect(() => {
     if (data && !loading && !error && data.success && data.data) {
@@ -127,7 +162,7 @@ function App() {
 
     // 인증은 되었지만 사용자 데이터 로딩 중인 경우
     if (isLoadingUserData) {
-      return <Spinner isLoading={true} />;
+      return <Spinner isLoading={true} text='불러오는 중...' />;
     }
 
     // 인증은 되었지만 API 오류가 발생한 경우
@@ -144,10 +179,11 @@ function App() {
 
   return (
     <div className='app'>
-      {isLoadingUserData && <Spinner isLoading={true} />}
+      {isLoadingUserData && <Spinner isLoading={true} text='로딩 중...' />}
 
       <Routes>
-        <Route path='/login' element={<Login />} />
+        <Route path='login' element={<Login />} />
+        <Route path='register' element={<Register />} />
         <Route
           path='/'
           element={
@@ -161,6 +197,23 @@ function App() {
           element={
             <ProtectedRoute>
               <Timetable />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='mypage'
+          element={
+            <ProtectedRoute>
+              <MyPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='policy'
+          element={
+            <ProtectedRoute>
+              <Policy />
             </ProtectedRoute>
           }
         />

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import '../styles/menu.scss';
 
 function Menu() {
@@ -6,13 +7,12 @@ function Menu() {
       <div className='title'>전체</div>
       <ul className='menu'>
         <li>
-          <div className='icon'>🌞</div>내 정보
+          <div className='icon'>🌞</div>
+          <Link to='/mypage'>내 정보</Link>
         </li>
         <li>
-          <div className='icon'>🔒</div>보안
-        </li>
-        <li>
-          <div className='icon'>📜</div>정책
+          <div className='icon'>📜</div>
+          <Link to='/policy'>정책</Link>
         </li>
       </ul>
       <div className='category'>기능</div>

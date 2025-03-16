@@ -6,6 +6,7 @@ import Spinner from '@/components/Spinner';
 interface CalendarProps {
   month: number;
   year?: number;
+  testDate?: Date; // 테스트용 날짜 추가
 }
 
 interface ScheduleEvent {
@@ -16,41 +17,14 @@ interface ScheduleEvent {
   endDate: string;
 }
 
-function Calendar({ month = 3, year = 2025 }: CalendarProps) {
+function Calendar({ month = 3, year = 2025, testDate }: CalendarProps) {
   const days = ['월', '화', '수', '목', '금'];
   const weeks = Array.from({ length: 6 }, (_, i) => `${i + 1}`);
-  const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchScheduleData = async () => {
-      try {
-        // 해당 월의 첫날과 마지막날 계산
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0);
+  // 테스트 모드인지 확인
+  const isTestMode = !!testDate;
 
-        // API 요청 URL 생성
-        const formattedStartDate = startDate.toISOString().split('T')[0];
-        const formattedEndDate = endDate.toISOString().split('T')[0];
-        const url = `https://hamster-server.vercel.app/api/v1/schedule?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
-
-        const response = await fetch(url);
-        const result = await response.json();
-
-        if (result.success) {
-          setScheduleEvents(result.data);
-        } else {
-          console.error('일정 데이터를 가져오는데 실패했습니다.');
-        }
-      } catch (error) {
-        console.error('API 요청 중 오류 발생:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchScheduleData();
-  }, [month, year]);
+  const schoolEvents = JSON.parse(String(localStorage.getItem('calendar')));
 
   const getCalendarDates = () => {
     const firstDay = new Date(year, month - 1, 1);
@@ -101,7 +75,7 @@ function Calendar({ month = 3, year = 2025 }: CalendarProps) {
     const day = date.getDate();
     const compareDate = new Date(year, month, day);
 
-    return scheduleEvents.find((event) => {
+    return schoolEvents.find((event: any) => {
       // 이벤트 시작일과 종료일도 년, 월, 일만 추출하여 비교
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
@@ -124,7 +98,99 @@ function Calendar({ month = 3, year = 2025 }: CalendarProps) {
     });
   };
 
+  // 현재 날짜 가져오기 (테스트 모드일 경우 testDate 사용)
+  const getCurrentDate = () => {
+    return isTestMode ? new Date(testDate!) : new Date();
+  };
+
+  // 오늘 날짜인지 확인하는 함수
+  const isToday = (date: Date) => {
+    const today = getCurrentDate();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+
+  // 오늘이 토요일인지 확인
+  const isSaturday = () => {
+    const today = getCurrentDate();
+    return today.getDay() === 6; // 토요일은 6
+  };
+
+  // 오늘이 일요일인지 확인
+  const isSunday = () => {
+    const today = getCurrentDate();
+    return today.getDay() === 0; // 일요일은 0
+  };
+
+  // 다음 주 월요일인지 확인
+  const isNextMonday = (date: Date) => {
+    const today = getCurrentDate();
+
+    // 오늘이 토요일인 경우, 다음 월요일은 이틀 후
+    if (isSaturday()) {
+      const nextMonday = new Date(today);
+      nextMonday.setDate(today.getDate() + 2);
+
+      return (
+        date.getDate() === nextMonday.getDate() &&
+        date.getMonth() === nextMonday.getMonth() &&
+        date.getFullYear() === nextMonday.getFullYear() &&
+        date.getDay() === 1 // 월요일인지 확인
+      );
+    }
+
+    // 오늘이 일요일인 경우, 다음 월요일은 하루 후
+    if (isSunday()) {
+      const nextMonday = new Date(today);
+      nextMonday.setDate(today.getDate() + 1);
+
+      return (
+        date.getDate() === nextMonday.getDate() &&
+        date.getMonth() === nextMonday.getMonth() &&
+        date.getFullYear() === nextMonday.getFullYear() &&
+        date.getDay() === 1 // 월요일인지 확인
+      );
+    }
+
+    return false;
+  };
+
   const calendarData = getCalendarDates();
+
+  // 테스트 모드 표시
+  const renderTestModeInfo = () => {
+    if (!isTestMode) return null;
+
+    const testDay = testDate!.getDay();
+    const dayNames = [
+      '일요일',
+      '월요일',
+      '화요일',
+      '수요일',
+      '목요일',
+      '금요일',
+      '토요일',
+    ];
+
+    return (
+      <div
+        className='test-mode-info'
+        style={{
+          background: '#f8f9fa',
+          padding: '10px',
+          marginBottom: '10px',
+          borderRadius: '4px',
+          border: '1px solid #dee2e6',
+        }}
+      >
+        <strong>테스트 모드:</strong> {testDate!.toLocaleDateString()} (
+        {dayNames[testDay]})
+      </div>
+    );
+  };
 
   return (
     <div className='calendar-component'>
@@ -132,87 +198,107 @@ function Calendar({ month = 3, year = 2025 }: CalendarProps) {
         <div className='date'>현암중학교</div>
         <div className='title'>{`${year}년 ${month}월 학사일정`}</div>
       </div>
+
+      {renderTestModeInfo()}
+
       <div className='table-container'>
-        {loading ? (
-          <Spinner isLoading={true} />
-        ) : (
-          Array.from({ length: (6 + 1) * (5 + 1) }).map((_, index) => {
-            const row = Math.floor(index / 6);
-            const col = index % 6;
+        {Array.from({ length: (6 + 1) * (5 + 1) }).map((_, index) => {
+          const row = Math.floor(index / 6);
+          const col = index % 6;
 
-            let originalContent = '';
-            let cellClass = 'cell';
-            let displayContent: React.ReactNode = '';
+          let originalContent = '';
+          let cellClass = 'cell';
+          let displayContent: React.ReactNode = '';
 
-            if (row === 0) {
-              originalContent = col === 0 ? '' : days[col - 1];
-              cellClass += ' header-cell';
-            } else if (col === 0) {
-              originalContent = weeks[row - 1] || '';
-              cellClass += ' week-header';
-            } else {
-              const dateInfo = calendarData[row - 1]?.[col - 1];
-              if (!dateInfo) return null;
+          if (row === 0) {
+            originalContent = col === 0 ? '' : days[col - 1];
+            cellClass += ' header-cell';
+          } else if (col === 0) {
+            originalContent = weeks[row - 1] || '';
+            cellClass += ' week-header';
+          } else {
+            const dateInfo = calendarData[row - 1]?.[col - 1];
+            if (!dateInfo) return null;
 
-              const date = dateInfo.date;
-              const fullDate = dateInfo.fullDate;
-              const isCurrent = dateInfo.isCurrent;
-              const isOtherMonth = dateInfo.isPrev || dateInfo.isNext;
+            const date = dateInfo.date;
+            const fullDate = dateInfo.fullDate;
+            const isCurrent = dateInfo.isCurrent;
+            const isOtherMonth = dateInfo.isPrev || dateInfo.isNext;
 
-              if (date) {
-                cellClass += ' date-cell';
-                if (isOtherMonth) cellClass += ' disabled';
+            if (date) {
+              cellClass += ' date-cell';
+              if (isOtherMonth) cellClass += ' disabled';
 
-                if (isCurrent) {
-                  const event = getEventForDate(fullDate);
+              if (isCurrent) {
+                const event = getEventForDate(fullDate);
+                const isCurrentDay = isToday(fullDate);
+                const isNextMondayAfterWeekend = isNextMonday(fullDate);
 
-                  if (event) {
-                    cellClass += ' has-event';
-                    const isAssignment = event.title.includes('수행평가');
-
-                    displayContent = (
-                      <div className='event-container'>
-                        <span className='date-number'>{date}</span>
-                        <div className='event-content'>
-                          {event.title}
-                          {isAssignment && (
-                            <Badge
-                              content='수행평가'
-                              background='80, 200, 120, 0.2'
-                              size='0.6rem'
-                            />
-                          )}
-                        </div>
-                      </div>
-                    );
-                  } else {
-                    displayContent = (
-                      <span className='date-number'>{date}</span>
-                    );
-                  }
-                } else {
-                  displayContent = (
-                    <span className='date-number disabled'>{date}</span>
-                  );
+                if (isCurrentDay) {
+                  cellClass += ' today';
                 }
+
+                if (isNextMondayAfterWeekend) {
+                  if (isSaturday()) {
+                    cellClass += ' today-saturday';
+                  } else if (isSunday()) {
+                    cellClass += ' today-sunday';
+                  }
+                }
+
+                if (event) {
+                  cellClass += ' has-event';
+                  const isAssignment = event.title.includes('수행평가');
+
+                  displayContent = (
+                    <div className='event-container'>
+                      <span className='date-number'>{date}</span>
+                      <div className='event-content'>
+                        {event.title}
+                        {isAssignment && (
+                          <Badge
+                            content='수행평가'
+                            background='80, 200, 120, 0.2'
+                            size='0.6rem'
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                } else {
+                  displayContent = <span className='date-number'>{date}</span>;
+                }
+              } else {
+                displayContent = (
+                  <span className='date-number disabled'>{date}</span>
+                );
               }
             }
+          }
 
-            return (
-              <div
-                key={index}
-                className={cellClass}
-                style={{
-                  gridRow: row + 1,
-                  gridColumn: col + 1,
-                }}
-              >
-                {displayContent || originalContent}
-              </div>
-            );
-          })
-        )}
+          return (
+            <div
+              key={index}
+              className={cellClass}
+              style={{
+                gridRow: row + 1,
+                gridColumn: col + 1,
+              }}
+            >
+              {displayContent || originalContent}
+            </div>
+          );
+        })}
       </div>
+
+      {/* 테스트 도구 추가 */}
+      {isTestMode && (
+        <div className='test-tools' style={{ marginTop: '20px' }}>
+          <h3>테스트 결과</h3>
+          <div>오늘이 토요일인가? {isSaturday() ? '예' : '아니오'}</div>
+          <div>오늘이 일요일인가? {isSunday() ? '예' : '아니오'}</div>
+        </div>
+      )}
     </div>
   );
 }

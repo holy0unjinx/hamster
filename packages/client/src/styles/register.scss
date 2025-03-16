@@ -1,0 +1,290 @@
+@use 'palette' as *;
+@use 'sass:color';
+
+.register-container {
+  background-color: $background;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .register-form {
+    background-color: $foreground;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    margin: 1rem;
+
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+
+      .progress-step {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background-color: $button;
+        color: $description;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 600;
+
+        &.active {
+          background-color: $blue;
+          color: $text;
+        }
+      }
+
+      .progress-line {
+        flex: 1;
+        height: 2px;
+        background-color: $border;
+        margin: 0 0.5rem;
+      }
+    }
+
+    .welcome-step,
+    .info-step,
+    .password-step,
+    .policy-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      h2 {
+        color: $text;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      p {
+        color: $description;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+      }
+    }
+
+    .input-group {
+      width: 100%;
+      margin-bottom: 1rem;
+
+      input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border-radius: 0.8rem;
+        border: 1px solid $border;
+        background-color: $button;
+        color: $text;
+        font-size: 1rem;
+        box-sizing: border-box;
+
+        &::placeholder {
+          color: $description;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: $blue;
+        }
+      }
+    }
+
+    .error-message {
+      color: $alert;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .next-btn,
+    .prev-btn,
+    .submit-btn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.8rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .next-btn,
+    .submit-btn {
+      background-color: $blue;
+      color: $text;
+
+      &:hover {
+        background-color: color.adjust($blue, $lightness: 5%);
+      }
+    }
+
+    .prev-btn {
+      background-color: $button;
+      color: $text;
+
+      &:hover {
+        background-color: color.adjust($button, $lightness: 5%);
+      }
+    }
+
+    .login-link {
+      margin-top: 2rem;
+      text-align: center;
+
+      a {
+        color: $blue;
+        text-decoration: none;
+        font-size: 0.9rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    // 정책 동의 단계 스타일
+    .policy-step {
+      width: 100%;
+
+      .policy-container {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .all-agree {
+          display: flex;
+          align-items: center;
+          padding: 1rem;
+          background-color: rgba(color.adjust($blue, $lightness: 30%), 0.2);
+          border-radius: 0.8rem;
+          margin-bottom: 1.2rem;
+          width: 100%;
+          box-sizing: border-box;
+
+          .checkbox-wrapper {
+            margin-right: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            input[type='checkbox'] {
+              width: 1.2rem;
+              height: 1.2rem;
+              cursor: pointer;
+              accent-color: $blue;
+            }
+          }
+
+          .all-agree-text {
+            color: $text;
+            font-weight: 600;
+            font-size: 1rem;
+          }
+        }
+
+        .policy-item {
+          margin-bottom: 1.2rem;
+          width: 100%;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+
+          .policy-header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+
+            .checkbox-wrapper {
+              margin-right: 0.8rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              input[type='checkbox'] {
+                width: 1.2rem;
+                height: 1.2rem;
+                cursor: pointer;
+                accent-color: $blue;
+              }
+            }
+
+            .policy-title {
+              color: $text;
+              font-weight: 500;
+              font-size: 1rem;
+              flex: 1;
+            }
+
+            .policy-toggle {
+              background-color: transparent;
+              border: 1px solid $border;
+              border-radius: 0.5rem;
+              color: $blue;
+              cursor: pointer;
+              font-size: 0.85rem;
+              padding: 0.3rem 0.8rem;
+              margin-left: 0.5rem;
+
+              &:hover {
+                background-color: color.adjust($button, $lightness: 5%);
+              }
+            }
+          }
+
+          .policy-content {
+            background-color: color.adjust($button, $lightness: -3%);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 0.8rem;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            color: $description;
+            border: 1px solid $border;
+            width: 100%;
+            box-sizing: border-box;
+            align-items: center;
+            &::-webkit-scrollbar {
+              width: 6px;
+            }
+
+            &::-webkit-scrollbar-track {
+              background: transparent;
+              border-radius: 6px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+              background-color: $border;
+              border-radius: 6px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

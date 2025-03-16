@@ -46,8 +46,6 @@ export const useAuthFetch = (url: string, options = {}) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log(cookies);
-        console.log(document.cookie);
 
         // 첫 번째 요청 시도
         const response = await fetch(url, {

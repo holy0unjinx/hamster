@@ -1,0 +1,84 @@
+@use 'palette' as *;
+@use 'sass:color';
+
+.login-form {
+  background-color: $foreground;
+  margin: 1rem;
+  margin-top: 2rem;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+
+  @media (min-width: calc(400px + 1rem)) {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: $text;
+    text-align: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    input {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 0.8rem;
+      border: 1px solid $border;
+      background-color: $button;
+      color: $text;
+      font-size: 1.1rem;
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: $description;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $blue;
+      }
+
+      &[type='submit'] {
+        background-color: $blue;
+        color: $text;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: color.adjust($blue, $lightness: -5%);
+        }
+      }
+    }
+
+    .error-message {
+      color: $alert;
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      text-align: center;
+    }
+  }
+
+  a {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    color: $description;
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    &:hover {
+      color: $blue;
+    }
+  }
+}

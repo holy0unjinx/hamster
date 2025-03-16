@@ -28,44 +28,39 @@ function convertToTimeTable(jsonString: string) {
 
   try {
     const data = JSON.parse(jsonString);
-    const grade = localStorage.getItem('grade') || '1';
-    const classNum = localStorage.getItem('class') || '1';
-
-    // 학년과 반에 해당하는 시간표 데이터 가져오기
-    const classData = data[grade]?.[classNum];
-
-    if (!classData || !Array.isArray(classData)) {
-      return Array(5)
-        .fill([])
-        .map(() => Array(7).fill(null));
-    }
 
     // 5일(월~금), 7교시 형태의 2차원 배열 생성
     const result = Array(5)
-      .fill([])
+      .fill(null)
       .map(() => Array(7).fill(null));
 
     // 데이터 변환
-    classData.forEach((daySchedule, dayIndex) => {
-      if (dayIndex < 5) {
-        // 월~금까지만 처리
-        daySchedule.forEach((period: any) => {
-          if (period.classTime > 0 && period.classTime <= 7) {
-            // 1~7교시만 처리
-            result[dayIndex][period.classTime - 1] = {
-              subject: period.subject,
-              teacher: period.teacher,
-            };
-          }
-        });
+    for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+      // 월~금까지 처리
+      const daySchedule = data[dayIndex] || [];
+
+      for (
+        let periodIndex = 0;
+        periodIndex < daySchedule.length;
+        periodIndex++
+      ) {
+        const period = daySchedule[periodIndex];
+
+        if (period && period.classTime > 0 && period.classTime <= 7) {
+          // 1~7교시만 처리
+          result[dayIndex][period.classTime - 1] = {
+            subject: period.subject,
+            teacher: period.teacher,
+          };
+        }
       }
-    });
+    }
 
     return result;
   } catch (error) {
     console.error('시간표 데이터 변환 중 오류 발생:', error);
     return Array(5)
-      .fill([])
+      .fill(null)
       .map(() => Array(7).fill(null));
   }
 }
@@ -122,7 +117,7 @@ function Timetable() {
                 displayContent = (
                   <>
                     {item.subject}
-                    <Badge content={item.teacher} />
+                    <Badge content={`${item.teacher}■`} />
                   </>
                 );
               }

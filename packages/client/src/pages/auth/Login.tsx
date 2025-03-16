@@ -1,6 +1,8 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import '../../styles/login.scss';
+import Spinner from '@/components/Spinner';
 
 function Login() {
   const [credentials, setCredentials] = useState({
@@ -8,11 +10,13 @@ function Login() {
     password: '',
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
   const navigate = useNavigate();
   const [cookies, setCookie] = useCookies(['access-token', 'refresh-token']);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsLoading(true); // 로딩 시작
 
     try {
       const response = await fetch(
@@ -48,9 +52,11 @@ function Login() {
         maxAge: 7 * 24 * 60 * 60,
       });
 
-      navigate('/');
+      window.location.href = '/';
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
@@ -82,7 +88,10 @@ function Login() {
         {error && <div className='error-message'>{error}</div>}
         <input type='submit' value='로그인' />
       </form>
-      <Link to='/register'>계정이 있나용?</Link>
+      <Link to='/register'>계정이 없으신가요?</Link>
+
+      {/* 스피너 컴포넌트 추가 */}
+      <Spinner isLoading={isLoading} text='로그인 중...' />
     </div>
   );
 }
