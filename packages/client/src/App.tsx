@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import Timetable from './pages/Timetable';
@@ -96,23 +96,82 @@ function App() {
   const year = today.getFullYear();
   const month = today.getMonth() + 1;
 
+  interface SchoolScheduleHead {
+    list_total_count: number;
+    RESULT?: {
+      CODE: string;
+      MESSAGE: string;
+    };
+  }
+
+  interface SchoolEvent {
+    ATPT_OFCDC_SC_CODE: string;
+    SD_SCHUL_CODE: string;
+    AY: string;
+    AA_YMD: string;
+    ATPT_OFCDC_SC_NM: string;
+    SCHUL_NM: string;
+    DGHT_CRSE_SC_NM: string;
+    SCHUL_CRSE_SC_NM: string;
+    EVENT_NM: string;
+    EVENT_CNTNT: string;
+    ONE_GRADE_EVENT_YN: string;
+    TW_GRADE_EVENT_YN: string;
+    THREE_GRADE_EVENT_YN: string;
+    FR_GRADE_EVENT_YN: string;
+    FIV_GRADE_EVENT_YN: string;
+    SIX_GRADE_EVENT_YN: string;
+    SBTR_DD_SC_NM: string;
+    LOAD_DTM: string;
+  }
+
+  interface SchoolScheduleData {
+    SchoolSchedule: [{ head: SchoolScheduleHead[] }, { row: SchoolEvent[] }];
+  }
+
+  interface FilteredEvent {
+    SBTR_DD_SC_NM: string; // 종류
+    EVENT_NM: string; // 이름
+    AA_YMD: string; // 날짜
+  }
+
   useEffect(() => {
     const fetchScheduleData = async () => {
       try {
-        // 해당 월의 첫날과 마지막날 계산
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0);
-
-        // API 요청 URL 생성
-        const formattedStartDate = startDate.toISOString().split('T')[0];
-        const formattedEndDate = endDate.toISOString().split('T')[0];
-        const url = `https://hamster-server.vercel.app/api/v1/schedule?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+        const url = `https://open.neis.go.kr/hub/SchoolSchedule?KEY=${
+          import.meta.env.VITE_NICE_API
+        }&Type=json&ATPT_OFCDC_SC_CODE=J10&SD_SCHUL_CODE=7751015&AA_YMD=${year}${month
+          .toString()
+          .padStart(2, '0')}`;
 
         const response = await fetch(url);
-        const result = await response.json();
+        const result: SchoolScheduleData = await response.json();
 
-        if (result.success) {
-          localStorage.setItem('calendar', JSON.stringify(result.data));
+        if (result.SchoolSchedule[0].head[1].RESULT!.CODE === 'INFO-000') {
+          // 데이터에서 row 배열 가져오기
+          const events = result.SchoolSchedule[1].row;
+
+          let grade: string = 'ONE_GRADE_EVENT_YN';
+          switch (Number(localStorage.getItem('grade'))) {
+            case 1:
+              break;
+            case 2:
+              grade = 'TW_GRADE_EVENT_YN';
+              break;
+            case 3:
+              grade = 'THREE_GRADE_EVENT_YN';
+              break;
+          }
+
+          // 학년에 맞는 일정만 필터링
+          const filteredEvents: FilteredEvent[] = events
+            .filter((event: any) => event[grade] === 'Y')
+            .map((event) => ({
+              SBTR_DD_SC_NM: event.SBTR_DD_SC_NM, // 종류
+              EVENT_NM: event.EVENT_NM, // 이름
+              AA_YMD: event.AA_YMD, // 날짜
+            }));
+          localStorage.setItem('calendar', JSON.stringify(filteredEvents));
         } else {
           console.error('일정 데이터를 가져오는데 실패했습니다.');
         }
@@ -120,7 +179,6 @@ function App() {
         console.error('API 요청 중 오류 발생:', error);
       }
     };
-
     fetchScheduleData();
   });
 
@@ -170,6 +228,7 @@ function App() {
       return (
         <div className='error-message'>
           사용자 정보를 불러오는 중 오류가 발생했습니다: {error}
+          <Link to='/login'>여기를 눌러 다시 로그인해주세요.</Link>
         </div>
       );
     }

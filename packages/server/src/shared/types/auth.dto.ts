@@ -14,8 +14,8 @@ export interface TeacherRegistrationDto {
   email: string;
   password: string;
   name: string;
-  subjectId: number;
   teachersOffice?: 1 | 2 | 3;
+  subjectName: string;
   homeroomClass?:
     | 11
     | 12

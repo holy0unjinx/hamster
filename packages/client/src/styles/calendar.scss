@@ -13,10 +13,11 @@
     }
     .title {
       font-size: 1.5rem;
-      font-weight: 600;
+      font-weight: 900;
       margin-bottom: 0.5rem;
     }
   }
+
   .table-container {
     display: grid;
     grid-template-columns: 1.2rem repeat(5, 1fr); // 제목열 포함 6열
@@ -123,6 +124,13 @@
             transform: translate(-50%, -50%);
             z-index: -1;
           }
+        }
+      }
+
+      &.holiday-event {
+        color: $alert;
+        .event-content {
+          color: $description;
         }
       }
     }

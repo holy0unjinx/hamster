@@ -1,34 +1,18 @@
 import '../styles/home.scss';
-import { IoSchool, IoSchoolSharp } from 'react-icons/io5';
+import { IoSchool } from 'react-icons/io5';
 import { FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { FaChevronRight } from 'react-icons/fa';
 import Badge from '@/components/Badge';
-import React, { useState, useEffect } from 'react';
-import Spinner from '@/components/Spinner';
-import { useAuthFetch } from '@/hooks/useAuthFetch';
+import { useState, useEffect } from 'react';
 
 function Home() {
   const [timetable, setTimetable] = useState([]);
   const [targetDate, setTargetDate] = useState('');
 
   useEffect(() => {
-    // localStorage에서 시간표 데이터 가져오기
-    interface TimetableItem {
-      grade: number;
-      class: number;
-      weekday: number;
-      weekdayString: string;
-      classTime: number;
-      teacher: string;
-      subject: string;
-    }
-
     // localStorage에서 데이터를 가져올 때 타입 지정
     const timetableString = localStorage.getItem('timetable');
-    const timetableData: TimetableItem[][] = timetableString
-      ? JSON.parse(timetableString)
-      : [];
 
     if (timetableString) {
       try {
@@ -110,7 +94,7 @@ function Home() {
                     item.subject !== '스클2' &&
                     item.subject !== '스클1' &&
                     item.subject !== '주제' && (
-                      <Badge content={`${item.teacher}■`} />
+                      <Badge content={`${item.teacher}T`} />
                     )}
                 </li>
               ) : (

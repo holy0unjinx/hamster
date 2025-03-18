@@ -29,11 +29,11 @@ model Teacher {
   email           String   @unique
   passwordHash    String   @map("password_hash")
   name            String
-  subjectId       Int      @map("subject_id")  // 추가된 필드
-  subject         Subject  @relation(fields: [subjectId], references: [id])  // 관계 설정
+  subjectName     String      @map("subject_name")  // 추가된 필드
   teachersOffice  Int?  @map("teachers_office")
   homeroomClass   Int?  @map("homeroom_class")
   createdAt       DateTime @default(now()) @map("created_at")
+  assessments     Assessment[]
 }
 
 model Schedule {
@@ -45,22 +45,16 @@ model Schedule {
   createdAt   DateTime  @default(now()) @map("created_at")
 }
 
-model Subject {
-  id                    Int                     @id @default(autoincrement())
-  subjectName          String                  @map("subject_name")
-  grade                Int
-  performanceAssessments Assessment[]
-  Teacher                Teacher[]
-}
-
 //TODO: 수행평가 스키마 수정하기
 model Assessment {
   id              Int               @id @default(autoincrement())
-  subjectId       Int              @map("subject_id")
+  grade           Int
+  class           Int
   title           String
   description     String?
   maxScore        Float            @map("max_score")
-  subject         Subject          @relation(fields: [subjectId], references: [id])
+  teacherId       Int              @map("teacher_id")
+  teacher         Teacher          @relation(fields: [teacherId], references: [id])
 }
 
 model Notification {

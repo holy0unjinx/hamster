@@ -7,7 +7,7 @@ import {
   IoIdCard,
   IoLogOut,
 } from 'react-icons/io5';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../styles/mypage.scss';
 import { useCookies } from 'react-cookie';
 import Spinner from '@/components/Spinner';
@@ -24,7 +24,6 @@ function MyPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [cookies, setCookie] = useCookies(['access-token', 'refresh-token']);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // localStorage에서 사용자 정보 불러오기

@@ -33,7 +33,7 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  res.send('hello');
+  res.send('여긴 왜 접속하셨죠? 당신, 매우 수상하군요...');
 });
 app.use('/api', router);
 

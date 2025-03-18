@@ -26,11 +26,6 @@ function isTeacherRegistrationDto(body: any) {
     type: String,
     raw: body.name,
   });
-  const subjectId = validateField({
-    name: 'subjectId',
-    type: Number,
-    raw: body.subjectId,
-  });
   const teachersOffice = validateField({
     name: 'teachersOffice',
     type: Number,
@@ -51,8 +46,13 @@ function isTeacherRegistrationDto(body: any) {
       );
     },
   });
+  const subjectName = validateField({
+    name: 'subjectName',
+    type: String,
+    raw: body.subjectName,
+  });
 
-  return { email, password, name, subjectId, teachersOffice, homeroomClass };
+  return { email, password, name, teachersOffice, homeroomClass, subjectName };
 }
 
 export class TeacherAuthController {

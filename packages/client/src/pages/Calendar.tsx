@@ -1,7 +1,6 @@
 import Badge from '@/components/Badge';
 import '../styles/calendar.scss';
-import React, { useEffect, useState } from 'react';
-import Spinner from '@/components/Spinner';
+import React from 'react';
 
 interface CalendarProps {
   month: number;
@@ -9,12 +8,10 @@ interface CalendarProps {
   testDate?: Date; // 테스트용 날짜 추가
 }
 
-interface ScheduleEvent {
-  id: number;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
+interface CalendarEvent {
+  SBTR_DD_SC_NM: string; // 이벤트 유형 (공휴일, 휴업일, 해당없음 등)
+  EVENT_NM: string; // 이벤트 이름
+  AA_YMD: string; // 이벤트 날짜 (YYYYMMDD 형식)
 }
 
 function Calendar({ month = 3, year = 2025, testDate }: CalendarProps) {
@@ -24,7 +21,10 @@ function Calendar({ month = 3, year = 2025, testDate }: CalendarProps) {
   // 테스트 모드인지 확인
   const isTestMode = !!testDate;
 
-  const schoolEvents = JSON.parse(String(localStorage.getItem('calendar')));
+  // 새로운 형식으로 데이터 가져오기
+  const schoolEvents: CalendarEvent[] = JSON.parse(
+    String(localStorage.getItem('calendar')) || '[]',
+  );
 
   const getCalendarDates = () => {
     const firstDay = new Date(year, month - 1, 1);
@@ -69,33 +69,15 @@ function Calendar({ month = 3, year = 2025, testDate }: CalendarProps) {
 
   // 날짜에 해당하는 이벤트 찾기
   const getEventForDate = (date: Date) => {
-    // 날짜만 비교하기 위해 년, 월, 일만 추출
+    // YYYYMMDD 형식으로 변환
     const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    const compareDate = new Date(year, month, day);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const dateString = `${year}${month}${day}`;
 
-    return schoolEvents.find((event: any) => {
-      // 이벤트 시작일과 종료일도 년, 월, 일만 추출하여 비교
-      const startDate = new Date(event.startDate);
-      const endDate = new Date(event.endDate);
-
-      // 시간 정보를 제거하고 날짜만 비교
-      const eventStart = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate(),
-      );
-
-      const eventEnd = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate(),
-      );
-
-      // 날짜가 이벤트 기간 내에 있는지 확인
-      return compareDate >= eventStart && compareDate <= eventEnd;
-    });
+    return schoolEvents.find(
+      (event: CalendarEvent) => event.AA_YMD === dateString,
+    );
   };
 
   // 현재 날짜 가져오기 (테스트 모드일 경우 testDate 사용)
@@ -192,6 +174,18 @@ function Calendar({ month = 3, year = 2025, testDate }: CalendarProps) {
     );
   };
 
+  // 이벤트 유형에 따른 스타일 클래스 반환
+  const getEventTypeClass = (eventType: string) => {
+    switch (eventType) {
+      case '공휴일':
+        return 'holiday-event';
+      case '휴업일':
+        return 'day-off-event';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className='calendar-component'>
       <div className='header'>
@@ -248,13 +242,17 @@ function Calendar({ month = 3, year = 2025, testDate }: CalendarProps) {
 
                 if (event) {
                   cellClass += ' has-event';
-                  const isAssignment = event.title.includes('수행평가');
+
+                  // 이벤트 유형에 따른 클래스 추가
+                  cellClass += ` ${getEventTypeClass(event.SBTR_DD_SC_NM)}`;
+
+                  const isAssignment = event.EVENT_NM.includes('수행평가');
 
                   displayContent = (
                     <div className='event-container'>
                       <span className='date-number'>{date}</span>
                       <div className='event-content'>
-                        {event.title}
+                        {event.EVENT_NM}
                         {isAssignment && (
                           <Badge
                             content='수행평가'
@@ -290,8 +288,6 @@ function Calendar({ month = 3, year = 2025, testDate }: CalendarProps) {
           );
         })}
       </div>
-
-      {/* 테스트 도구 추가 */}
       {isTestMode && (
         <div className='test-tools' style={{ marginTop: '20px' }}>
           <h3>테스트 결과</h3>

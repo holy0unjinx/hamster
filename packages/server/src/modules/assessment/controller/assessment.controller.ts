@@ -11,10 +11,15 @@ export class AssessmentController {
   //TODO: 수행평가 함수 수정
   async checkAssessments(req: Request, res: Response) {
     try {
-      if (!req.query.subjectId)
-        throw new InvalidQueryError('subjectId 필드가 작성되지 않았습니다.');
+      if (!req.query.grade && !req.query.class)
+        throw new InvalidQueryError(
+          'grade 나 class 필드가 작성되지 않았습니다.',
+        );
       const assessments = await prisma.assessment.findMany({
-        where: { subjectId: parseInt(req.query.subjectId as string) },
+        where: {
+          grade: parseInt(req.query.grade as string),
+          class: parseInt(req.query.class as string),
+        },
       });
       res.status(200).json({ success: true, assessments });
     } catch (error) {
@@ -25,10 +30,10 @@ export class AssessmentController {
   async addAssessment(req: Request, res: Response) {
     try {
       validateRole(req.user, [ROLE.TEACHER, ROLE.ADMIN]);
-      const subjectId = validateField({
-        name: 'subjectId',
+      const teacherId = validateField({
+        name: 'teacherId',
         type: Number,
-        raw: req.body.subjectId,
+        raw: req.body.teacherId,
       });
       const title = validateField({
         name: 'title',
@@ -45,13 +50,25 @@ export class AssessmentController {
         type: String,
         raw: req.body.maxScore,
       });
+      let grade = validateField({
+        name: 'grade',
+        type: Number,
+        raw: req.body.grade,
+      });
+      let _class = validateField({
+        name: 'class',
+        type: Number,
+        raw: req.body.class,
+      });
       maxScore = parseFloat(maxScore as string);
       const assessment = await prisma.assessment.create({
         data: {
-          subjectId,
+          teacherId,
           title,
           maxScore,
           description,
+          grade,
+          class: _class,
         },
       });
       res.status(201).json({ success: true, assessment });

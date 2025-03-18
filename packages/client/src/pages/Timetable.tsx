@@ -3,19 +3,6 @@ import '../styles/timetable.scss';
 import React from 'react';
 
 /**
- * 시간표 항목의 인터페이스 정의
- */
-interface TimeTableItem {
-  grade: number;
-  class: number;
-  weekday: number;
-  weekdayString: string;
-  classTime: number;
-  teacher: string;
-  subject: string;
-}
-
-/**
  * paste.txt의 내용을 시간표 형식으로 변환하는 함수
  * @param jsonString - paste.txt의 내용 (문자열)
  * @returns 요일별, 교시별로 정리된 시간표 배열
@@ -69,7 +56,6 @@ function convertToTimeTable(jsonString: string) {
 
 function Timetable() {
   const days = ['월', '화', '수', '목', '금'];
-  const periods = 7;
   const data = convertToTimeTable(localStorage.getItem('timetable')!);
 
   return (
@@ -119,7 +105,7 @@ function Timetable() {
                 displayContent = (
                   <>
                     {item.subject}
-                    <Badge content={`${item.teacher}■`} />
+                    <Badge content={`${item.teacher}T`} />
                   </>
                 );
               }
