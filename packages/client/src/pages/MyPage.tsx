@@ -61,7 +61,6 @@ function MyPage() {
     localStorage.removeItem('class');
     localStorage.removeItem('number');
 
-    //TODO: logout 구현하기
     // 로그아웃 API 호출
     await fetch('https://hamster-server.vercel.app/api/v1/auth/logout', {
       method: 'POST',

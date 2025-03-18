@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
 
 export class AssessmentController {
   constructor() {}
+  //TODO: 수행평가 함수 수정
   async checkAssessments(req: Request, res: Response) {
     try {
       if (!req.query.subjectId)

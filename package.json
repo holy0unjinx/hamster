@@ -7,7 +7,8 @@
   "author": "holy_unjinx (신성은진)",
   "scripts": {
     "client:dev": "yarn workspace @hamster/client dev",
-    "server:dev": "yarn workspace @hamster/server dev"
+    "server:dev": "yarn workspace @hamster/server dev",
+    "dashboard:dev": "yarn workspace @hamster/dashboard dev"
   },
   "workspaces": [
     "packages/*"

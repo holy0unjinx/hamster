@@ -65,6 +65,8 @@ function convertToTimeTable(jsonString: string) {
   }
 }
 
+//TODO: 수행평가 확인 함수 작성
+
 function Timetable() {
   const days = ['월', '화', '수', '목', '금'];
   const periods = 7;

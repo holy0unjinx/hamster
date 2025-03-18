@@ -1,6 +1,7 @@
 {
   "short_name": "햄스터 [HAMSTER]",
   "name": "햄스터 [HAMSTER]",
+  "description": "2025 학생자치회 학생회장 공약 프로젝트의 일환",
   "icons": [
     {
       "src": "favicon.ico",
@@ -21,5 +22,7 @@
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#3381f3",
-  "background_color": "#101012"
+  "background_color": "#101012",
+  "author": "신성은진 (@holy_unjinx)",
+  "default_locale": "kr"
 }

@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // 수정됨
 app.use(
   cors({
-    origin: 'https://hamster-client.vercel.app',
+    origin: ['https://hamster-client.vercel.app', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   }),

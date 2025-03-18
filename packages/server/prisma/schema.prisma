@@ -53,6 +53,7 @@ model Subject {
   Teacher                Teacher[]
 }
 
+//TODO: 수행평가 스키마 수정하기
 model Assessment {
   id              Int               @id @default(autoincrement())
   subjectId       Int              @map("subject_id")
