@@ -45,6 +45,7 @@ function isTeacherRegistrationDto(body: any) {
         (homeroom > 30 && homeroom < 37)
       );
     },
+    required: false,
   });
   const subjectName = validateField({
     name: 'subjectName',

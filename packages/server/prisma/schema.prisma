@@ -54,6 +54,8 @@ model Assessment {
   description     String?
   maxScore        Float            @map("max_score")
   teacherId       Int              @map("teacher_id")
+  period          Int
+  examDate        DateTime         @map("exam_date")
   teacher         Teacher          @relation(fields: [teacherId], references: [id])
 }
 
