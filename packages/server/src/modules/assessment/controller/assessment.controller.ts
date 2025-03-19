@@ -1,3 +1,4 @@
+import { parseDateString } from '@/shared/utils/date.utils';
 import prisma from '../../../shared/config/database';
 import { ROLE } from '../../../shared/types/auth.dto';
 import { InvalidQueryError } from '../../../shared/types/error.type';
@@ -60,6 +61,16 @@ export class AssessmentController {
         type: Number,
         raw: req.body.class,
       });
+      let period = validateField({
+        name: 'period',
+        type: Number,
+        raw: req.body.period,
+      });
+      let examDate = validateField({
+        name: 'examDate',
+        type: String,
+        raw: req.body.examDate,
+      });
       maxScore = parseFloat(maxScore as string);
       const assessment = await prisma.assessment.create({
         data: {
@@ -69,6 +80,8 @@ export class AssessmentController {
           description,
           grade,
           class: _class,
+          period,
+          examDate: parseDateString(examDate),
         },
       });
       res.status(201).json({ success: true, assessment });
