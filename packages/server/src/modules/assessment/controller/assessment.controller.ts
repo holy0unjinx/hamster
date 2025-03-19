@@ -80,7 +80,7 @@ export class AssessmentController {
           description,
           grade,
           class: _class,
-          period,
+          period: req.body.period,
           examDate: parseDateString(examDate),
         },
       });
