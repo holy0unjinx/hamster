@@ -1,4 +1,4 @@
-import { parseDateString } from '@/shared/utils/date.utils';
+import { parseDateString } from '../../../shared/utils/date.utils';
 import prisma from '../../../shared/config/database';
 import { ROLE } from '../../../shared/types/auth.dto';
 import { InvalidQueryError } from '../../../shared/types/error.type';
