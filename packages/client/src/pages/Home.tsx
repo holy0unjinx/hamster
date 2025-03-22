@@ -9,6 +9,8 @@ import { useState, useEffect } from 'react';
 function Home() {
   const [timetable, setTimetable] = useState([]);
   const [targetDate, setTargetDate] = useState('');
+  const [assessments, setAssessments] = useState([]);
+  const [todayAssessments, setTodayAssessments] = useState([]);
 
   useEffect(() => {
     // localStorage에서 데이터를 가져올 때 타입 지정
@@ -56,6 +58,28 @@ function Home() {
         console.error('시간표 데이터 파싱 오류:', error);
       }
     }
+
+    const assessmentString = localStorage.getItem('assessment');
+
+    if (assessmentString) {
+      try {
+        const assessmentData = JSON.parse(assessmentString);
+        setAssessments(assessmentData);
+
+        // 오늘 날짜의 수행평가 필터링
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        const todayAssessmentList = assessmentData.filter((assessment: any) => {
+          const assessmentDate = new Date(assessment.examDate);
+          return assessmentDate.toISOString().split('T')[0] === todayStr;
+        });
+
+        setTodayAssessments(todayAssessmentList);
+      } catch (error) {
+        console.error('수행평가 데이터 파싱 오류:', error);
+      }
+    }
   }, []);
   return (
     <div className='home'>
@@ -85,8 +109,13 @@ function Home() {
             {localStorage.getItem('class')})
           </p>
           <ol>
-            {timetable.map((item: any, index) =>
-              item.subject ? (
+            {timetable.map((item: any, index) => {
+              // 해당 교시에 수행평가가 있는지 확인
+              const hasAssessment = todayAssessments.some(
+                (assessment: any) => assessment.period === item.classTime,
+              );
+
+              return item.subject ? (
                 <li key={index}>
                   {item.subject}
                   {item.teacher &&
@@ -96,11 +125,12 @@ function Home() {
                     item.subject !== '주제' && (
                       <Badge content={`${item.teacher}T`} />
                     )}
+                  {hasAssessment && <Badge content='수행평가' />}
                 </li>
               ) : (
                 <li key={index} className='disabled'></li>
-              ),
-            )}
+              );
+            })}
           </ol>
         </div>
       </div>

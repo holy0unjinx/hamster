@@ -9,19 +9,31 @@ import { Request, Response } from 'express';
 
 export class AssessmentController {
   constructor() {}
-  //TODO: 수행평가 함수 수정
   async checkAssessments(req: Request, res: Response) {
     try {
       if (!req.query.grade && !req.query.class)
         throw new InvalidQueryError(
           'grade 나 class 필드가 작성되지 않았습니다.',
         );
-      const assessments = await prisma.assessment.findMany({
+
+      let assessments = await prisma.assessment.findMany({
         where: {
           grade: parseInt(req.query.grade as string),
           class: parseInt(req.query.class as string),
         },
+        include: {
+          teacher: {
+            select: {
+              id: true,
+              name: true,
+              subjectName: true,
+              teachersOffice: true,
+              homeroomClass: true,
+            },
+          },
+        },
       });
+
       res.status(200).json({ success: true, assessments });
     } catch (error) {
       handleError(error, res);

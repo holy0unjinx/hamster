@@ -28,6 +28,44 @@ function App() {
     'https://hamster-server.vercel.app/api/v1/student/me',
   );
 
+  const fetchAssessments = async () => {
+    if (!checkAuth()) return;
+
+    try {
+      setIsLoadingUserData(true);
+      const response = await fetch(
+        `https://hamster-server.vercel.app/api/v1/assessment?grade=${localStorage.getItem(
+          'grade',
+        )}&class=${localStorage.getItem('class')}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        },
+      );
+      if (!response.ok) {
+        throw new Error(
+          `수행평가 데이터를 가져오는데 실패했습니다. 상태 코드: ${response.status}`,
+        );
+      }
+
+      const assessmentData = await response.json();
+
+      localStorage.setItem(
+        'assessment',
+        JSON.stringify(assessmentData.assessments),
+      );
+      console.log('수행평가 데이터 저장완');
+    } catch (err) {
+      console.error('수행 데이터 가져오기 오류:', err);
+    } finally {
+      setIsLoadingUserData(false);
+    }
+  };
+
   const fetchTimetable = async () => {
     if (!checkAuth()) return;
 
@@ -200,6 +238,7 @@ function App() {
         console.log('사용자 정보가 localStorage에 저장되었습니다.');
 
         fetchTimetable();
+        fetchAssessments();
       } catch (err) {
         console.error('localStorage 저장 중 오류 발생:', err);
       }
