@@ -53,12 +53,31 @@ function App() {
       }
 
       const assessmentData = await response.json();
+      const currentDate = new Date();
+      const userGrade = localStorage.getItem('grade');
+      const userClass = localStorage.getItem('class');
 
-      localStorage.setItem(
-        'assessment',
-        JSON.stringify(assessmentData.assessments),
-      );
-      console.log('수행평가 데이터 저장완');
+      const filteredAssessments = assessmentData.assessments
+        .filter((assessment: any) => {
+          const examDate = new Date(assessment.examDate);
+          return (
+            examDate >= currentDate &&
+            assessment.grade.toString() === userGrade &&
+            assessment.class.toString() === userClass
+          );
+        })
+        .map((assessment: any) => ({
+          title: assessment.title,
+          description: assessment.description,
+          maxScore: assessment.maxScore,
+          period: assessment.period,
+          examDate: assessment.examDate,
+          teacherName: assessment.teacher.name,
+          subjectName: assessment.teacher.subjectName,
+        }));
+
+      localStorage.setItem('assessment', JSON.stringify(filteredAssessments));
+      console.log('수행평가 데이터 저장 완료');
     } catch (err) {
       console.error('수행 데이터 가져오기 오류:', err);
     } finally {

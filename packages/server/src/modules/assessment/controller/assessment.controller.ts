@@ -16,6 +16,18 @@ export class AssessmentController {
           'grade 나 class 필드가 작성되지 않았습니다.',
         );
 
+      // 30일 이상 지난 수행평가 삭제
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      await prisma.assessment.deleteMany({
+        where: {
+          examDate: {
+            lt: thirtyDaysAgo,
+          },
+        },
+      });
+
       let assessments = await prisma.assessment.findMany({
         where: {
           grade: parseInt(req.query.grade as string),
@@ -33,7 +45,6 @@ export class AssessmentController {
           },
         },
       });
-
       res.status(200).json({ success: true, assessments });
     } catch (error) {
       handleError(error, res);
