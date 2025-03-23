@@ -176,7 +176,6 @@ function MyPage() {
           </Link>
         </div>
         <div className='account-actions'>
-          <button className='action-button'>비밀번호 변경</button>
           <button className='action-button logout' onClick={handleLogout}>
             로그아웃
           </button>

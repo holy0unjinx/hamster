@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Home from './pages/Home';
@@ -12,27 +12,36 @@ import { useAuthFetch } from './hooks/useAuthFetch';
 import MyPage from './pages/MyPage';
 import Policy from './pages/Policy';
 import Register from './pages/auth/Register';
+import AssessmentDetailPage from './pages/Assessment';
+import InstallPrompt from './pages/Install';
+import PWAProtectedRoute from './components/PWAProtectedRoute';
 
 function App() {
   const location = useLocation();
   const currentPath = location.pathname.slice(1) || 'home';
   const [cookies] = useCookies(['access-token', 'refresh-token']);
-  const [isLoadingUserData, setIsLoadingUserData] = useState(true);
 
-  const checkAuth = () => {
-    return !!cookies['refresh-token'];
-  };
+  // 로딩 상태 통합 관리
+  const [loadingState, setLoadingState] = useState({
+    isLoading: true,
+    message: '불러오는 중...',
+  });
 
-  // 인증된 상태일 때 사용자 정보 가져오기
-  const { data, loading, error } = useAuthFetch(
-    'https://hamster-server.vercel.app/api/v1/student/me',
-  );
+  // 인증 체크 함수
+  const isAuthenticated = !!cookies['refresh-token'];
+
+  // 사용자 데이터 가져오기
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useAuthFetch('https://hamster-server.vercel.app/api/v1/student/me');
 
   const fetchAssessments = async () => {
-    if (!checkAuth()) return;
+    if (!isAuthenticated) return;
 
     try {
-      setIsLoadingUserData(true);
+      setLoadingState({ isLoading: true, message: '수행평가 로딩중...' });
       const response = await fetch(
         `https://hamster-server.vercel.app/api/v1/assessment?grade=${localStorage.getItem(
           'grade',
@@ -67,6 +76,7 @@ function App() {
           );
         })
         .map((assessment: any) => ({
+          id: assessment.id,
           title: assessment.title,
           description: assessment.description,
           maxScore: assessment.maxScore,
@@ -81,73 +91,65 @@ function App() {
     } catch (err) {
       console.error('수행 데이터 가져오기 오류:', err);
     } finally {
-      setIsLoadingUserData(false);
+      setLoadingState({ isLoading: false, message: '' });
     }
   };
 
-  const fetchTimetable = async () => {
-    if (!checkAuth()) return;
+  // 사용자 데이터 저장 함수
+  const saveUserData = useCallback((data: any) => {
+    try {
+      const { id, studentNumber, name, grade, class: classNum, number } = data;
+
+      // localStorage에 사용자 정보 저장
+      localStorage.setItem('userId', id.toString());
+      localStorage.setItem('studentNumber', studentNumber.toString());
+      localStorage.setItem('name', name);
+      localStorage.setItem('grade', grade.toString());
+      localStorage.setItem('class', classNum.toString());
+      localStorage.setItem('number', number.toString());
+
+      console.log('사용자 정보가 localStorage에 저장되었습니다.');
+      return true;
+    } catch (err) {
+      console.error('localStorage 저장 중 오류 발생:', err);
+      return false;
+    }
+  }, []);
+
+  // 시간표 데이터 가져오기
+  const fetchTimetable = useCallback(async () => {
+    if (!isAuthenticated) return;
+
+    setLoadingState({ isLoading: true, message: '시간표 로딩중...' });
 
     try {
-      // 로딩 상태 추가
-      setIsLoadingUserData(true);
-
       const response = await fetch(
         'https://hamster-server.vercel.app/api/v1/timetable/api/timetable?schoolCode=62573',
       );
 
-      if (!response.ok) {
-        throw new Error(
-          `시간표 데이터를 가져오는데 실패했습니다. 상태 코드: ${response.status}`,
-        );
-      }
+      if (!response.ok)
+        throw new Error(`시간표 데이터 가져오기 실패: ${response.status}`);
 
       const timetableData = await response.json();
+      const userGrade = localStorage.getItem('grade');
+      const userClass = localStorage.getItem('class');
 
-      if (timetableData) {
-        // 사용자 학년과 반에 해당하는 시간표 데이터만 필터링
-        const userGrade = localStorage.getItem('grade');
-        const userClass = localStorage.getItem('class');
+      if (!userGrade || !userClass) throw new Error('사용자 학년/반 정보 없음');
 
-        if (!userGrade || !userClass) {
-          throw new Error('사용자 학년 또는 반 정보가 없습니다.');
-        }
+      const filteredTimetable = timetableData[userGrade]?.[userClass];
 
-        const filteredTimetable = timetableData[userGrade]?.[userClass];
-
-        if (filteredTimetable) {
-          // 필터링된 시간표 데이터를 localStorage에 저장
-          localStorage.setItem('timetable', JSON.stringify(filteredTimetable));
-          localStorage.setItem(
-            'timetableLastUpdated',
-            new Date().toISOString(),
-          );
-          console.log(
-            '사용자 학년과 반의 시간표 정보가 localStorage에 저장되었습니다.',
-          );
-
-          // 저장 확인
-          const savedData = localStorage.getItem('timetable');
-          if (!savedData) {
-            console.error(
-              '시간표 데이터가 localStorage에 저장되지 않았습니다.',
-            );
-          }
-        } else {
-          throw new Error(
-            '사용자 학년과 반에 해당하는 시간표 데이터가 없습니다.',
-          );
-        }
+      if (filteredTimetable) {
+        localStorage.setItem('timetable', JSON.stringify(filteredTimetable));
+        localStorage.setItem('timetableLastUpdated', new Date().toISOString());
+        return true;
       } else {
-        throw new Error('시간표 데이터 형식이 올바르지 않습니다.');
+        throw new Error('해당 학년/반의 시간표 데이터가 없습니다');
       }
     } catch (err) {
-      console.error('시간표 데이터 가져오기 오류:', err);
-      // 오류 상태 관리를 위한 state 추가 필요
-    } finally {
-      setIsLoadingUserData(false);
+      console.error('시간표 데이터 오류:', err);
+      return false;
     }
-  };
+  }, [isAuthenticated]);
 
   const today = new Date();
   const year = today.getFullYear();
@@ -192,101 +194,105 @@ function App() {
     AA_YMD: string; // 날짜
   }
 
-  useEffect(() => {
-    const fetchScheduleData = async () => {
-      try {
-        const url = `https://open.neis.go.kr/hub/SchoolSchedule?KEY=${
-          import.meta.env.VITE_NICE_API
-        }&Type=json&ATPT_OFCDC_SC_CODE=J10&SD_SCHUL_CODE=7751015&AA_YMD=${year}${month
-          .toString()
-          .padStart(2, '0')}`;
+  const fetchScheduleData = async () => {
+    try {
+      setLoadingState({ isLoading: true, message: '일정 로딩중...' });
+      const url = `https://open.neis.go.kr/hub/SchoolSchedule?KEY=${
+        import.meta.env.VITE_NICE_API
+      }&Type=json&ATPT_OFCDC_SC_CODE=J10&SD_SCHUL_CODE=7751015&AA_YMD=${year}${month
+        .toString()
+        .padStart(2, '0')}`;
 
-        const response = await fetch(url);
-        const result: SchoolScheduleData = await response.json();
+      const response = await fetch(url);
+      const result: SchoolScheduleData = await response.json();
 
-        if (result.SchoolSchedule[0].head[1].RESULT!.CODE === 'INFO-000') {
-          // 데이터에서 row 배열 가져오기
-          const events = result.SchoolSchedule[1].row;
+      if (result.SchoolSchedule[0].head[1].RESULT!.CODE === 'INFO-000') {
+        // 데이터에서 row 배열 가져오기
+        const events = result.SchoolSchedule[1].row;
 
-          let grade: string = 'ONE_GRADE_EVENT_YN';
-          switch (Number(localStorage.getItem('grade'))) {
-            case 1:
-              break;
-            case 2:
-              grade = 'TW_GRADE_EVENT_YN';
-              break;
-            case 3:
-              grade = 'THREE_GRADE_EVENT_YN';
-              break;
-          }
-
-          // 학년에 맞는 일정만 필터링
-          const filteredEvents: FilteredEvent[] = events
-            .filter((event: any) => event[grade] === 'Y')
-            .map((event) => ({
-              SBTR_DD_SC_NM: event.SBTR_DD_SC_NM, // 종류
-              EVENT_NM: event.EVENT_NM, // 이름
-              AA_YMD: event.AA_YMD, // 날짜
-            }));
-          localStorage.setItem('calendar', JSON.stringify(filteredEvents));
-        } else {
-          console.error('일정 데이터를 가져오는데 실패했습니다.');
+        let grade: string = 'ONE_GRADE_EVENT_YN';
+        switch (Number(localStorage.getItem('grade'))) {
+          case 1:
+            break;
+          case 2:
+            grade = 'TW_GRADE_EVENT_YN';
+            break;
+          case 3:
+            grade = 'THREE_GRADE_EVENT_YN';
+            break;
         }
-      } catch (error) {
-        console.error('API 요청 중 오류 발생:', error);
+
+        // 학년에 맞는 일정만 필터링
+        const filteredEvents: FilteredEvent[] = events
+          .filter((event: any) => event[grade] === 'Y')
+          .map((event) => ({
+            SBTR_DD_SC_NM: event.SBTR_DD_SC_NM, // 종류
+            EVENT_NM: event.EVENT_NM, // 이름
+            AA_YMD: event.AA_YMD, // 날짜
+          }));
+        localStorage.setItem('calendar', JSON.stringify(filteredEvents));
+      } else {
+        console.error('일정 데이터를 가져오는데 실패했습니다.');
       }
-    };
-    fetchScheduleData();
-  });
+    } catch (error) {
+      console.error('API 요청 중 오류 발생:', error);
+    }
+  };
 
   // 사용자 데이터가 로드되면 localStorage에 개별 필드로 저장
+  // 사용자 데이터 로드 및 저장
   useEffect(() => {
-    if (data && !loading && !error && data.success && data.data) {
-      try {
-        // 각 필드를 개별적으로 localStorage에 저장
-        localStorage.setItem('userId', data.data.id.toString());
-        localStorage.setItem(
-          'studentNumber',
-          data.data.studentNumber.toString(),
-        );
-        localStorage.setItem('name', data.data.name);
-        localStorage.setItem('grade', data.data.grade.toString());
-        localStorage.setItem('class', data.data.class.toString());
-        localStorage.setItem('number', data.data.number.toString());
+    if (!isAuthenticated) {
+      setLoadingState({ isLoading: false, message: '' });
+      return;
+    }
 
-        console.log('사용자 정보가 localStorage에 저장되었습니다.');
+    if (userData && !userLoading && !userError && userData.success) {
+      setLoadingState({ isLoading: true, message: '사용자 데이터 저장 중...' });
 
-        fetchTimetable();
-        fetchAssessments();
-      } catch (err) {
-        console.error('localStorage 저장 중 오류 발생:', err);
+      const success = saveUserData(userData.data);
+
+      if (success) {
+        // 사용자 데이터 저장 성공 시 추가 데이터 로드
+        Promise.all([
+          fetchTimetable(),
+          fetchAssessments(),
+          fetchScheduleData(),
+        ]).finally(() => {
+          setLoadingState({ isLoading: false, message: '' });
+        });
       }
     }
-  }, [data, loading, error]);
+  }, [userData, userLoading, userError, isAuthenticated]);
 
-  // 로딩 상태 처리
+  // 로딩 상태 업데이트
   useEffect(() => {
-    setIsLoadingUserData(loading && checkAuth());
-  }, [loading]);
+    if (!isAuthenticated) {
+      setLoadingState({ isLoading: false, message: '' });
+      return;
+    }
+    if (isAuthenticated) {
+      setLoadingState((prev) => ({
+        ...prev,
+        isLoading: userLoading,
+      }));
+    }
+  }, [userLoading, isAuthenticated]);
 
-  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-    const isAuthenticated = checkAuth();
-
+  const ProtectedRoute = ({ children }: any) => {
     if (!isAuthenticated) {
       return <Navigate to='/login' replace />;
     }
 
-    // 인증은 되었지만 사용자 데이터 로딩 중인 경우
-    if (isLoadingUserData) {
-      return <Spinner isLoading={true} text='불러오는 중...' />;
+    if (loadingState.isLoading) {
+      return <Spinner isLoading={true} text={loadingState.message} />;
     }
 
-    // 인증은 되었지만 API 오류가 발생한 경우
-    if (error && checkAuth()) {
+    if (userError) {
       return (
         <div className='error-message'>
-          사용자 정보를 불러오는 중 오류가 발생했습니다: {error}
-          <Link to='/login'>여기를 눌러 다시 로그인해주세요.</Link>
+          사용자 정보를 불러오는 중 오류가 발생했습니다
+          <Link to='/login'>다시 로그인하기</Link>
         </div>
       );
     }
@@ -296,56 +302,102 @@ function App() {
 
   return (
     <div className='app'>
-      {<Spinner isLoading={isLoadingUserData} text='로딩 중...' />}
+      {loadingState.isLoading && (
+        <Spinner isLoading={true} text={loadingState.message} />
+      )}
 
       <Routes>
-        <Route path='login' element={<Login />} />
-        <Route path='register' element={<Register />} />
+        <Route path='install' element={<InstallPrompt />} />
+        {/* 공개 라우트 */}
+        <Route
+          path='login'
+          element={<PWAProtectedRoute element={<Login />} />}
+        />
+        <Route
+          path='register'
+          element={<PWAProtectedRoute element={<Register />} />}
+        />
+        <Route
+          path='policy'
+          element={<PWAProtectedRoute element={<Policy />} />}
+        />
+
+        {/* 보호된 라우트 */}
         <Route
           path='/'
           element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
+            <PWAProtectedRoute
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
           }
         />
         <Route
           path='timetable'
           element={
-            <ProtectedRoute>
-              <Timetable />
-            </ProtectedRoute>
+            <PWAProtectedRoute
+              element={
+                <ProtectedRoute>
+                  <Timetable />
+                </ProtectedRoute>
+              }
+            />
+          }
+        />
+        <Route
+          path='/assessment/:id'
+          element={
+            <PWAProtectedRoute
+              element={
+                <ProtectedRoute>
+                  <AssessmentDetailPage />
+                </ProtectedRoute>
+              }
+            />
           }
         />
         <Route
           path='mypage'
           element={
-            <ProtectedRoute>
-              <MyPage />
-            </ProtectedRoute>
+            <PWAProtectedRoute
+              element={
+                <ProtectedRoute>
+                  <MyPage />
+                </ProtectedRoute>
+              }
+            />
           }
         />
-
-        <Route path='policy' element={<Policy />} />
         <Route
           path='schedule'
           element={
-            <ProtectedRoute>
-              <Calendar month={3} />
-            </ProtectedRoute>
+            <PWAProtectedRoute
+              element={
+                <ProtectedRoute>
+                  <Calendar month={new Date().getMonth() + 1} />
+                </ProtectedRoute>
+              }
+            />
           }
         />
         <Route
           path='menu'
           element={
-            <ProtectedRoute>
-              <Menu />
-            </ProtectedRoute>
+            <PWAProtectedRoute
+              element={
+                <ProtectedRoute>
+                  <Menu />
+                </ProtectedRoute>
+              }
+            />
           }
         />
       </Routes>
 
-      {checkAuth() && <Navigation active={currentPath} />}
+      {isAuthenticated && <Navigation active={currentPath} />}
     </div>
   );
 }

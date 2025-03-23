@@ -24,5 +24,6 @@
   "theme_color": "#3381f3",
   "background_color": "#101012",
   "author": "신성은진 (@holy_unjinx)",
-  "default_locale": "kr"
+  "default_locale": "kr",
+  "gcm_sender_id": "103953800507"
 }

@@ -1,0 +1,58 @@
+// install-prompt.scss
+@use 'palette' as *;
+@use 'sass:color';
+
+.install-prompt-container {
+  background-color: $foreground;
+  margin: 1rem;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  @media (min-width: calc(400px + 1rem)) {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $text;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: $description;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .install-button {
+    background-color: $blue;
+    color: $text;
+    border: none;
+    border-radius: 0.8rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    max-width: 250px;
+
+    &:hover {
+      background-color: color.adjust($blue, $lightness: 5%);
+    }
+
+    &:active {
+      background-color: color.adjust($blue, $lightness: -5%);
+    }
+  }
+}
