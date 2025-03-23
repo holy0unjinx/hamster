@@ -6,7 +6,7 @@ import { FaChevronRight } from 'react-icons/fa';
 import Badge from '@/components/Badge';
 import { useState, useEffect } from 'react';
 import { requestForToken, onMessageListener } from '../firebase';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 interface TimetableItem {
   classTime: number;
   subject: string;
@@ -22,13 +22,28 @@ function Home() {
   const [todayAssessments, setTodayAssessments] = useState([]);
   const [notificationStatus, setNotificationStatus] = useState('default');
   const [notification, setNotification] = useState({ title: '', body: '' });
-  const saveTokenToFirestore = (userId: any, token: any) => {
-    const db = getFirestore();
-    setDoc(doc(db, 'fcmTokens', userId), {
-      token: token,
-      createdAt: new Date().toISOString(),
-    });
-    return true;
+  const saveTokenToFirestore = async (userId: any, token: any) => {
+    try {
+      // 기존 토큰 확인 로직 추가
+      const db = getFirestore();
+      const tokenRef = doc(db, 'fcmTokens', userId);
+      const tokenDoc = await getDoc(tokenRef);
+
+      // 이미 같은 토큰이 있으면 저장하지 않음
+      if (tokenDoc.exists() && tokenDoc.data().token === token) {
+        console.log('이미 등록된 토큰입니다.');
+        return true;
+      }
+
+      await setDoc(tokenRef, {
+        token: token,
+        createdAt: new Date().toISOString(),
+      });
+      return true;
+    } catch (error) {
+      console.error('토큰 저장 중 오류:', error);
+      return false;
+    }
   };
 
   useEffect(() => {

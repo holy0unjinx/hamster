@@ -33,6 +33,8 @@ export const requestForToken = async () => {
 export const onMessageListener = () =>
   new Promise((resolve) => {
     onMessage(messaging, (payload) => {
+      // 포그라운드에서는 브라우저 알림 대신 앱 내 토스트 메시지만 표시
+      console.log('포그라운드 메시지 수신:', payload);
       resolve(payload);
     });
   });

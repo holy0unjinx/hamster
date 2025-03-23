@@ -20,6 +20,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
+  // 백그라운드에서만 브라우저 알림 표시
   console.log('백그라운드 메시지 수신:', payload);
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
