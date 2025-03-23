@@ -17,7 +17,7 @@ const messaging = getMessaging(app);
 export const requestForToken = async () => {
   try {
     const currentToken = await getToken(messaging, {
-      vapidKey: 'YOUR_VAPID_KEY',
+      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
     });
     if (currentToken) {
       console.log('현재 토큰:', currentToken);
