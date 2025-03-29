@@ -19,14 +19,42 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  // 백그라운드에서만 브라우저 알림 표시
-  console.log('백그라운드 메시지 수신:', payload);
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/logo192.png',
-  };
+self.addEventListener('push', (event) => {
+  if (event.data) {
+    const payload = event.data.json();
+    if (payload.data && payload.data.source === 'firebase') return;
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+      body: payload.notification.body,
+      icon: '/logo192.png',
+      data: payload.data,
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(
+        notificationTitle,
+        notificationOptions,
+      ),
+    );
+  }
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const urlToOpen = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then((windowClients) => {
+      for (let i = 0; i < windowClients.length; i++) {
+        let client = windowClients[i];
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    }),
+  );
 });

@@ -22,14 +22,16 @@ function Home() {
   const [todayAssessments, setTodayAssessments] = useState([]);
   const [notificationStatus, setNotificationStatus] = useState('default');
   const [notification, setNotification] = useState({ title: '', body: '' });
-  const saveTokenToFirestore = async (userId: any, token: any) => {
+  const saveTokenToFirestore = async (
+    userId: any,
+    token: any,
+    classId: string,
+  ) => {
     try {
-      // 기존 토큰 확인 로직 추가
       const db = getFirestore();
       const tokenRef = doc(db, 'fcmTokens', userId);
       const tokenDoc = await getDoc(tokenRef);
 
-      // 이미 같은 토큰이 있으면 저장하지 않음
       if (tokenDoc.exists() && tokenDoc.data().token === token) {
         console.log('이미 등록된 토큰입니다.');
         return true;
@@ -37,6 +39,7 @@ function Home() {
 
       await setDoc(tokenRef, {
         token: token,
+        classId: classId, // 반 정보 추가
         createdAt: new Date().toISOString(),
       });
       return true;
@@ -384,7 +387,13 @@ function Home() {
               return;
             }
 
-            const saved = await saveTokenToFirestore(userId, token);
+            const studentNumber = String(localStorage.getItem('studentNumber'));
+            const classNumber = studentNumber.slice(0, 3);
+            const saved = await saveTokenToFirestore(
+              userId,
+              token,
+              classNumber,
+            );
             if (saved) {
               console.log('FCM 토큰이 Firestore에 저장되었습니다.');
             } else {

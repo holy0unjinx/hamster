@@ -1,6 +1,5 @@
 // PWA가 설치되었는지 확인하는 함수
-export const isPWAInstalled = () => {
-  // 스탠드얼론 모드인지 확인 (PWA로 실행 중인지)
+export const isPWAInstalled = (): boolean => {
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone ||
