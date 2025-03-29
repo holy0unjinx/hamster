@@ -78,14 +78,13 @@ self.addEventListener('message', (event) => {
 
 // 다른 사용자 정의 서비스 워커 로직은 여기에 들어갈 수 있습니다.
 
-// TODO: 서비스 워커 만들기
-self.addEventListener('push', function (event) {
-  const data = event.data?.json(); // 서버가 JSON을 보낸다고 가정
-  const options = {
-    body: data.body,
-    icon: 'icon.png',
-    badge: 'badge.png',
-  };
+// self.addEventListener('push', function (event) {
+//   const data = event.data?.json(); // 서버가 JSON을 보낸다고 가정
+//   const options = {
+//     body: data.body,
+//     icon: 'icon.png',
+//     badge: 'badge.png',
+//   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
-});
+//   event.waitUntil(self.registration.showNotification(data.title, options));
+// });
