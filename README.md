@@ -2,6 +2,8 @@
 
 # 햄스터 (HAMS-TER)
 
+[Client](hamster-client.vercel.app) [Dashboard](hamster-dashboard-khaki.vercel.app) [Server](hamster-server.vercel.app)
+
 햄스터(HAMS-TER)는 현암중학교 학생들의 학사 관리 효율화를 위해 개발된 공식 애플리케이션입니다. 2025년 학생자치회 회장 공약의 일환으로 시작되어 2025년 4월 정식 서비스를 목표로 개발 하였습니다.
 
 ## 주요 기능
