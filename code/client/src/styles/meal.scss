@@ -1,0 +1,96 @@
+@use 'palette' as *;
+@use 'sass:color';
+
+.meal-component {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: $foreground;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    h2 {
+      color: $blue;
+      font-size: 2rem;
+    }
+
+    .school-info {
+      color: $description;
+      font-size: 0.9rem;
+    }
+  }
+
+  .weekly-grid {
+    .weekdays-header {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      margin-bottom: 1rem;
+
+      .weekday {
+        background: color.adjust($foreground, $lightness: -5%);
+        padding: 0.8rem;
+        text-align: center;
+        font-weight: bold;
+      }
+    }
+
+    .week-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      margin-bottom: 1px;
+    }
+
+    .day-cell {
+      background: white;
+      min-height: 150px;
+      padding: 1rem;
+      position: relative;
+
+      &.disabled {
+        background: color.adjust($foreground, $lightness: -3%);
+        .meal-content {
+          color: color.adjust($description, $alpha: -0.5);
+        }
+      }
+
+      &.today {
+        background: color.adjust($alert, $alpha: -0.9);
+      }
+
+      .date-header {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        position: relative;
+
+        .today-marker {
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          width: 8px;
+          height: 8px;
+          background: $alert;
+          border-radius: 50%;
+        }
+      }
+
+      .meal-content {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre-line;
+        margin: 0;
+        color: $description;
+
+        &:empty::after {
+          content: '급식 정보 없음';
+          color: color.adjust($description, $alpha: -0.3);
+        }
+      }
+    }
+  }
+}

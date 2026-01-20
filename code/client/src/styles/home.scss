@@ -1,0 +1,404 @@
+@use 'palette' as *;
+@use 'sass:color';
+.home {
+  background-color: $background;
+  width: 100%;
+
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    a {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      color: $description;
+      text-decoration: none;
+      font-size: 1.2rem;
+
+      svg {
+        font-size: 1.5rem;
+        color: $icon;
+        padding-right: 0.5rem;
+      }
+    }
+
+    .right {
+      padding: 1rem;
+      padding-right: 1.2rem;
+      background-color: $background;
+      outline: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      height: 100%;
+
+      svg {
+        font-size: 1.5rem;
+        color: $icon;
+      }
+    }
+  }
+
+  .notification-box {
+    background-color: $foreground;
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media (min-width: 400px) {
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .notification-content {
+      display: flex;
+      align-items: center;
+
+      .bell-icon {
+        font-size: 1.8rem;
+        color: $alert;
+        margin-right: 1rem;
+      }
+
+      .notification-text {
+        display: flex;
+        flex-direction: column;
+
+        .notification-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: $text;
+          margin: 0;
+          margin-bottom: 0.2rem;
+        }
+
+        .notification-desc {
+          font-size: 0.9rem;
+          color: $description;
+          margin: 0;
+        }
+      }
+    }
+
+    .notification-btn {
+      background-color: $button;
+      color: $text;
+      border: none;
+      border-radius: 0.8rem;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: color.adjust($button, $lightness: 5%);
+      }
+    }
+  }
+
+  .announcement {
+    background-color: $foreground;
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: 1rem;
+
+    img {
+      width: 100%;
+      border-radius: 1rem;
+      display: block;
+    }
+
+    @media (min-width: calc(400px + 1rem)) {
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0;
+      margin-bottom: 1rem;
+
+      img {
+        width: 100%;
+      }
+    }
+  }
+
+  .event-box {
+    background-color: $foreground;
+    margin: 1rem;
+    border-radius: 1rem;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    .event-name {
+      color: $text;
+      font-size: 1.1rem;
+      font-weight: 600;
+      max-width: 70%;
+    }
+
+    .event-dday {
+      background-color: rgba(white, 0.15);
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    @media (min-width: 400px) {
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    // 모바일 대응
+    @media (max-width: 360px) {
+      padding: 1rem;
+
+      .event-name {
+        font-size: 1rem;
+      }
+
+      .event-dday {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.8rem;
+      }
+    }
+  }
+
+  .box {
+    background-color: $foreground;
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: 1rem;
+    padding-bottom: 0.01px;
+
+    @media (min-width: calc(400px + 1rem)) {
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    &:last-child {
+      padding-bottom: 4rem;
+    }
+
+    .title {
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem;
+        color: $text;
+        text-decoration: none;
+        font-size: 1.4rem;
+        font-weight: 700;
+
+        svg {
+          font-size: 1rem;
+          color: $chevron;
+          padding-left: 0.5rem;
+        }
+      }
+    }
+
+    .timetable {
+      margin: 1rem;
+      margin-top: 0;
+
+      p {
+        margin: 0;
+        text-align: center;
+        color: $description;
+        font-size: 1rem;
+        padding-bottom: 0.5rem;
+      }
+
+      ol {
+        list-style-type: none;
+        padding-left: 0;
+        counter-reset: item;
+        margin-top: 0;
+        border-radius: 1rem;
+        overflow: hidden;
+
+        li {
+          display: flex;
+          align-items: center;
+          background-color: $button;
+          color: $text;
+          flex-grow: 1;
+          font-size: 1.2rem;
+
+          &::before {
+            content: counter(item) '';
+            counter-increment: item;
+            width: 2rem;
+            height: 100%;
+            background-color: $border;
+            color: $text;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.3rem;
+            margin-right: 1rem;
+            font-weight: 900;
+            font-size: 1.2rem;
+          }
+
+          .assessment-timetable {
+            display: flex;
+            color: white;
+            text-decoration: none;
+          }
+
+          .badge {
+            margin-left: 5px;
+          }
+
+          &.disabled {
+            opacity: 0.5;
+          }
+
+          .bold {
+            font-weight: 600;
+          }
+        }
+      }
+    }
+
+    .assessment {
+      display: block;
+      margin: 1rem;
+      margin-top: 0;
+
+      a {
+        text-decoration: none;
+        color: inherit; // 원래 텍스트 색상 유지
+        display: block; // 링크가 전체 영역을 차지하도록
+      }
+
+      .container {
+        display: flex;
+        .icon {
+          background-color: $button;
+          justify-content: center;
+          align-items: center;
+          border-radius: 1rem;
+          font-size: 2.5rem;
+          padding: 1rem;
+          margin-right: 1rem;
+        }
+        .content {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          .head {
+            display: flex;
+            width: 100%;
+            font-size: 0.75rem;
+            align-items: center;
+          }
+          .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+          }
+        }
+      }
+      .date {
+        color: $description;
+        margin-left: auto;
+        margin-right: 1rem;
+        width: fit-content;
+      }
+      .no-assessment {
+        color: #fff;
+        text-align: center;
+        padding: 2rem;
+        font-size: 1.1rem;
+        background-color: rgba($button, 0.5);
+        border-radius: 1rem;
+        margin: 1rem;
+        border: 1px solid rgba($border, 0.3);
+
+        // 모바일 최적화
+        @media (max-width: 360px) {
+          font-size: 1rem;
+          padding: 1.5rem;
+        }
+      }
+    }
+    .meal {
+      margin: 1rem;
+      margin-top: 0;
+
+      .meal-type {
+        color: $description;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+        text-align: center;
+      }
+
+      .meal-list {
+        background-color: $button;
+        border-radius: 1rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+
+        .meal-item {
+          color: $text;
+          font-size: 1.1rem;
+          padding: 0.5rem;
+          border-bottom: 1px solid rgba($border, 0.3);
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &::before {
+            content: '•';
+            color: #fff;
+            margin-right: 0.5rem;
+          }
+        }
+      }
+
+      .no-meal {
+        color: $description;
+        text-align: center;
+        padding: 2rem;
+        font-size: 1.1rem;
+        background-color: rgba($button, 0.5);
+        border-radius: 1rem;
+      }
+
+      @media (min-width: calc(400px + 1rem)) {
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+
+        .meal-list {
+          padding: 1.25rem;
+        }
+      }
+    }
+  }
+}

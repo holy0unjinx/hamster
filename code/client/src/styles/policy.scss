@@ -1,0 +1,117 @@
+@use 'palette' as *;
+
+.policy-container {
+  background-color: $background;
+  color: $text;
+  padding: 1rem 1.2rem 3rem;
+  max-width: 100%;
+
+  @media (min-width: calc(400px + 1rem)) {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: $text;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    color: $blue;
+    border-bottom: 1px solid $border;
+    padding-bottom: 0.4rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-top: 1.2rem;
+    margin-bottom: 0.6rem;
+    color: $text;
+  }
+
+  p {
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+    color: $description;
+    font-size: 0.95rem;
+  }
+
+  ul,
+  ol {
+    margin-bottom: 1.2rem;
+    padding-left: 1.2rem;
+
+    li {
+      margin-bottom: 0.6rem;
+      color: $description;
+      line-height: 1.4;
+      font-size: 0.95rem;
+
+      strong {
+        color: $text;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // 정책 섹션 스타일
+  .policy-section {
+    background-color: $foreground;
+    border-radius: 0.8rem;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid $border;
+  }
+
+  // 중요 정보 강조 스타일
+  .highlight-info {
+    background-color: rgba($blue, 0.1);
+    border-left: 3px solid $blue;
+    padding: 0.8rem;
+    border-radius: 0.4rem;
+    margin: 1.2rem 0;
+  }
+
+  // 날짜 정보 스타일
+  .date-info {
+    display: inline-block;
+    background-color: $button;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.4rem;
+    margin-right: 0.8rem;
+    font-size: 0.85rem;
+    color: $description;
+  }
+
+  // 연락처 정보 스타일
+  .contact-info {
+    background-color: $button;
+    border-radius: 0.6rem;
+    padding: 0.8rem;
+    margin: 1.2rem 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.4rem;
+
+      &:before {
+        content: '';
+        display: inline-block;
+        width: 0.4rem;
+        height: 0.4rem;
+        background-color: $blue;
+        border-radius: 50%;
+        margin-right: 0.6rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+// register.scss
+$background: #ffffff;
+$foreground: #f8f9fa;
+$border: #e0e0e0;
+$text: #333333;
+$description: #666666;
+$primary: #3381f3;
+$error: #f04452;
+
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $background;
+  padding: 20px;
+
+  .register-form {
+    width: 100%;
+    max-width: 500px;
+    background-color: $foreground;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      color: $text;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+    }
+
+    form {
+      .input-group {
+        margin-bottom: 20px;
+
+        input {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid $border;
+          border-radius: 4px;
+          font-size: 1rem;
+
+          &:focus {
+            outline: none;
+            border-color: $primary;
+          }
+
+          &::placeholder {
+            color: $description;
+          }
+        }
+      }
+
+      .error-message {
+        color: $error;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: $primary;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-bottom: 20px;
+
+        &:hover {
+          background-color: darken($primary, 10%);
+        }
+      }
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+
+      a {
+        color: $primary;
+        text-decoration: none;
+        font-size: 0.9rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

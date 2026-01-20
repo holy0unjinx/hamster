@@ -1,0 +1,29 @@
+{
+  "short_name": "햄스터 [HAMSTER]",
+  "name": "햄스터 [HAMSTER]",
+  "description": "2025 학생자치회 학생회장 공약 프로젝트의 일환",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "icons/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icons/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#3381f3",
+  "background_color": "#101012",
+  "author": "신성은진 (@holy_unjinx)",
+  "default_locale": "kr",
+  "gcm_sender_id": "103953800507"
+}
